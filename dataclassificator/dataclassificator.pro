@@ -14,9 +14,17 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         classificator.cpp \
-    qcustomplot.cpp
+    qcustomplot.cpp \
+    tablecolumnchooser.cpp
 
 HEADERS  += classificator.h \
-    qcustomplot.h
+    qcustomplot.h \
+    tablecolumnchooser.h
 
-FORMS    += classificator.ui
+FORMS    += classificator.ui \
+    tablecolumnchooser.ui
+
+RESOURCES += \
+    res/resource.qrc
+
+OTHER_FILES +=
