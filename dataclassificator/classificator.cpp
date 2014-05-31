@@ -58,7 +58,5 @@ void Classificator::CreateTeachSample(QString file_name) {
         NeuronExample example(_class_map.value(class_name), x, y);
         _teach_sample.push_front(example);
     }
-    for (int i = 0; i < _teach_sample.size(); i++)
-        _teach_sample.at(i).Print();
     file.close();
 }

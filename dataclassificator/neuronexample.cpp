@@ -1,6 +1,5 @@
 #include "neuronexample.h"
 
-#include <QDebug>
 
 NeuronExample::NeuronExample() {
     _class_number = 0;
@@ -50,9 +49,4 @@ void NeuronExample::set_x(double x) {
 
 void NeuronExample::set_y(double y) {
     _y = y;
-}
-
-
-void NeuronExample::Print() const {
-    qDebug() << _class_number << " " << _x << " " << _y;
 }
