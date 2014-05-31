@@ -15,11 +15,13 @@ TEMPLATE = app
 SOURCES += main.cpp\
         classificator.cpp \
     qcustomplot.cpp \
-    tablecolumnchooser.cpp
+    tablecolumnchooser.cpp \
+    neuronexample.cpp
 
 HEADERS  += classificator.h \
     qcustomplot.h \
-    tablecolumnchooser.h
+    tablecolumnchooser.h \
+    neuronexample.h
 
 FORMS    += classificator.ui \
     tablecolumnchooser.ui

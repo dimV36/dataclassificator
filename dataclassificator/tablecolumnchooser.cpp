@@ -24,6 +24,14 @@ void TableColumnChooser::set_headers(QStringList headers) {
 }
 
 
+QStringList TableColumnChooser::get_headers() const {
+    QStringList result;
+    for (int i = 0; i < _ui -> _list_choosen_columns -> count(); i++)
+        result.append(_ui -> _list_choosen_columns -> item(i) -> text());
+    return result;
+}
+
+
 void TableColumnChooser::SlotAddItemToChoosenList(QListWidgetItem *item) {
     if ( _ui -> _list_choosen_columns -> count() < 2) {
         int index = _ui -> _list_input_columns -> row(item);
