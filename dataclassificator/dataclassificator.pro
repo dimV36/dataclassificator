@@ -16,12 +16,16 @@ SOURCES += main.cpp\
         classificator.cpp \
     qcustomplot.cpp \
     tablecolumnchooser.cpp \
-    neuronexample.cpp
+    neuronexample.cpp \
+    neuron.cpp \
+    perceptron.cpp
 
 HEADERS  += classificator.h \
     qcustomplot.h \
     tablecolumnchooser.h \
-    neuronexample.h
+    neuronexample.h \
+    neuron.h \
+    perceptron.h
 
 FORMS    += classificator.ui \
     tablecolumnchooser.ui
