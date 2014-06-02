@@ -1,25 +1,24 @@
 #ifndef NEURONEXAMPLE_H
 #define NEURONEXAMPLE_H
 
+#include <QVector>
+
 class NeuronExample
 {
 private:
-    int _class_number;
-    double _x;
-    double _y;
+    QVector<double> _data;
+    int _class_name;
 
 public:
     NeuronExample();
-    NeuronExample(int class_number, double x, double y);
+    NeuronExample(QVector<double> data, int class_name);
     NeuronExample(const NeuronExample &example);
 
-    int get_class_number() const;
-    double get_x() const;
-    double get_y() const;
+    QVector<double> get_data() const;
+    int get_class_name() const;
 
-    void set_class_number(int class_number);
-    void set_x(double x);
-    void set_y(double y);
+    void set_data(QVector<double> data);
+    void set_class_name(int class_name);
 };
 
 #endif // NEURONEXAMPLE_H

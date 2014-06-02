@@ -1,11 +1,14 @@
 #include "neuron.h"
 
+#include <QDebug>
+
 /**
  * Конструктор по умолчанию
  * @brief Neuron::Neuron
  */
 Neuron::Neuron() {
    _weights = QVector<double>();
+   _step = 50;
 }
 
 
@@ -17,8 +20,10 @@ Neuron::Neuron() {
 Neuron::Neuron(const Neuron &neuron) {
     if (*this != neuron) {
         _weights = neuron._weights;
+        _step = neuron._step;
     }
 }
+
 
 /**
  * Конструктор нейрона с количеством входов count
@@ -26,10 +31,8 @@ Neuron::Neuron(const Neuron &neuron) {
  * @param count
  */
 Neuron::Neuron(int count) {
-    qsrand(QTime::secTo(QTime::currentTime()));
     _weights = QVector<double>(count);
-    for (int i = 0; i < _weights.size(); i++)
-        _weights[i] = double (qrand() / RAND_MAX);
+    _step = 50;
 }
 
 /**
@@ -58,7 +61,7 @@ void Neuron::InitWeights(int step) {
  * @param delta - разница между выходом нейрона и нужным выходом
  * @param x - входной вектор
  */
-void Neuron::ChangeWeights(int speed, double delta, double *x) {
+void Neuron::ChangeWeights(int speed, double delta, QVector<double> x) {
     for (int i = 0; i < _weights.size(); i++)
         _weights[i] += (double) speed * delta * x[i];
 }
@@ -69,7 +72,7 @@ void Neuron::ChangeWeights(int speed, double delta, double *x) {
  * @param x - входной вектор
  * @return - невзвешенная сумма result
  */
-double Neuron::GetSum(double *input) {
+double Neuron::GetSum(QVector<double> input) {
     double result = 0;
     for (int i = 0; i < _weights.size(); i++)
         result += input[i] * _weights[i];
@@ -97,7 +100,7 @@ int Neuron::Activator(double sum) {
  * @param x - входной вектор
  * @return - выходное значение нейрона
  */
-int Neuron::Transfer(double *x) {
+int Neuron::Transfer(QVector<double> x) {
     return Activator(GetSum(x));
 }
 
@@ -107,11 +110,21 @@ int Neuron::Transfer(double *x) {
  * @brief Neuron::operator =
  * @param neuron
  */
-Neuron Neuron::operator= (Neuron neuron) {
+Neuron Neuron::operator = (Neuron &neuron) {
     if (*this != neuron) {
         _weights = neuron._weights;
         _step = neuron._step;
     }
+    return *this;
+}
+
+
+Neuron Neuron::operator = (const Neuron &neuron) {
+    if (*this != neuron) {
+        _weights = neuron._weights;
+        _step = neuron._step;
+    }
+    return *this;
 }
 
 
@@ -121,9 +134,14 @@ Neuron Neuron::operator= (Neuron neuron) {
  * @param neuron
  * @return
  */
-bool Neuron::operator== (Neuron neuron) {
+bool Neuron::operator == (const Neuron &neuron) {
     if (_weights == neuron._weights && _step == neuron._step)
         return true;
     else
         return false;
+}
+
+
+bool Neuron::operator != (const Neuron &neuron) {
+    return !(*this == neuron);
 }

@@ -1,9 +1,7 @@
 #ifndef NEURON_H
 #define NEURON_H
 
-#include <QTime>
 #include <QVector>
-#include "qmath.h"
 
 /**
 * Нейрон с пороговой функцией
@@ -11,10 +9,10 @@
 class Neuron {
 private:
     QVector<double> _weights;
-    int _step = 50; // Значение порога
+    int _step; // Значение порога
 
 private:
-    double GetSum(double *input);
+    double GetSum(QVector<double> input);
     int Activator(double sum);
 
 public:
@@ -23,12 +21,14 @@ public:
     Neuron(const Neuron &neuron);
     ~Neuron();
 
-    int Transfer(double *weight);
+    int Transfer(QVector<double> x);
     void InitWeights(int step);
-    void ChangeWeights(int speed, double delta, double *x);
+    void ChangeWeights(int speed, double delta, QVector<double> x);
 
-    Neuron operator= (Neuron neuron);
-    bool operator== (Neuron neuron);
+    Neuron operator = (Neuron &neuron);
+    Neuron operator = (const Neuron &neuron);
+    bool operator == (const Neuron &neuron);
+    bool operator != (const Neuron &neuron);
 };
 
 #endif // NEURON_H

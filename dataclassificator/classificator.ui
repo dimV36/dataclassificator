@@ -26,7 +26,7 @@
      <x>0</x>
      <y>0</y>
      <width>426</width>
-     <height>20</height>
+     <height>19</height>
     </rect>
    </property>
    <widget class="QMenu" name="_file_menu">
@@ -34,7 +34,6 @@
      <string>Файл</string>
     </property>
     <addaction name="_action_open_sample"/>
-    <addaction name="_action_open_examples"/>
     <addaction name="separator"/>
     <addaction name="_action_exit"/>
    </widget>
@@ -78,11 +77,6 @@
    </property>
    <property name="text">
     <string>Открыть файл с выборкой</string>
-   </property>
-  </action>
-  <action name="_action_open_examples">
-   <property name="text">
-    <string>Открыть файл с примерами</string>
    </property>
   </action>
   <action name="_action_exit">

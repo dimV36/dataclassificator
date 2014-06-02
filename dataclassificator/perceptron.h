@@ -2,16 +2,29 @@
 #define PERCEPTRON_H
 
 #include "neuron.h"
+#include "neuronexample.h"
 
 class Perceptron
 {
 private:
-    int _input;
-    int _output;
-    QVector<Neuron> _neurons;
+    int _output;                // Количество выходов
+    QVector<Neuron *> _neurons;   // Вектор нейронов
 
 public:
-    Perceptron(int input, int output);
+    Perceptron();
+    Perceptron(int count, int output);
+    Perceptron(const Perceptron &perceptron);
+    ~Perceptron();
+
+    QVector<int> Recognize(QVector<double> x);
+    void InitWeights(int weight);
+    void Teach(QVector<double> x, QVector<int> y);
+    QVector<int> MakeOutputVector(const NeuronExample &example);
+
+    Perceptron operator = (Perceptron &perceptron);
+    Perceptron operator = (const Perceptron &perceptron);
+    bool operator == (const Perceptron &perceptron);
+    bool operator != (const Perceptron &perceptron);
 };
 
 #endif // PERCEPTRON_H
