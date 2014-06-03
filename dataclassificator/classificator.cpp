@@ -34,9 +34,14 @@ void Classificator::CreateTeachSample(QString file_name) {
     chooser.set_headers(headers);
     if (chooser.exec() == QDialog::Accepted) {
         choosen_data = chooser.get_headers();
-    }
+    } else
+        return;
+
     _index_x = headers.indexOf(choosen_data.at(0));
     _index_y = headers.indexOf(choosen_data.at(1));
+
+    _ui -> _graph -> xAxis -> setLabel(choosen_data.at(0));
+    _ui -> _graph -> yAxis -> setLabel(choosen_data.at(1));
 
     while(false == file.atEnd()) {
         QStringList row_list = QString(file.readLine()).split('\t');
@@ -75,6 +80,8 @@ void Classificator::on__action_open_sample_triggered() {
                                                      tr("Выбрать файл с обучающей выборкой"),
                                                      QDir::currentPath(),
                                                      tr("Файлы выборки (*txt)"));
+    if (true == file_name.isEmpty())
+        return;
     CreateTeachSample(file_name);
     _ui -> _action_teach -> setEnabled(true);
 }
@@ -88,7 +95,6 @@ void Classificator::on__action_teach_triggered() {
             QVector<double> x = _teach_sample[i].get_data();
             QVector<int> y = _perceptron.MakeOutputVector(_teach_sample[i]);
             _perceptron.Teach(x, y);
-//            _ui -> _status_bar -> showMessage(tr("Сеть обучается примеру %1").arg(QString::number(count)));
         }
     }
     _ui -> _action_classificate -> setEnabled(true);
@@ -119,8 +125,10 @@ void Classificator::on__action_classificate_triggered() {
         vector.push_back(x);
         vector.push_back(y);
 
+        // http://www.qcustomplot.com/index.php/tutorials/basicplotting
+        // http://stackoverflow.com/questions/19817885/qcustomplot-interact-with-a-single-point-on-a-graph
         int class_name = _perceptron.GetClass(vector);
-        _ui -> _graph -> graph(0) -> addData(x ,y);
+        _ui -> _graph -> graph(class_name) -> addData(x, y);
     }
     _ui -> _graph -> replot();
     file.close();
