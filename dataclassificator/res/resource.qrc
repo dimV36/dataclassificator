@@ -1,8 +1,9 @@
 <RCC>
     <qresource prefix="/">
         <file>exit.png</file>
-        <file>open.png</file>
         <file>teach.png</file>
         <file>classificate.png</file>
+        <file>refresh.png</file>
+        <file>open.png</file>
     </qresource>
 </RCC>

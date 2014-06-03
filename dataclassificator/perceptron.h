@@ -20,6 +20,7 @@ public:
     void InitWeights(int weight);
     void Teach(QVector<double> x, QVector<int> y);
     QVector<int> MakeOutputVector(const NeuronExample &example);
+    int GetClass(QVector<double> x);
 
     Perceptron operator = (Perceptron &perceptron);
     Perceptron operator = (const Perceptron &perceptron);

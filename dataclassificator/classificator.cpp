@@ -55,8 +55,9 @@ void Classificator::CreateTeachSample(QString file_name) {
         NeuronExample example(vector, _class_map.value(class_name));
         _teach_sample.push_back(example);
     }
-    ShakeExamples();
     file.close();
+    _perceptron = Perceptron(_class_map.size(), 2);
+//    _perceptron.InitWeights(3);
 }
 
 
@@ -80,13 +81,14 @@ void Classificator::on__action_open_sample_triggered() {
 
 
 void Classificator::on__action_teach_triggered() {
-    _perceptron = Perceptron(_class_map.size(), 2);
-    int count = 200;
+    int count = 100;
     while(count-- > 0) {
+        ShakeExamples();
         for (int i = 0; i < _teach_sample.size(); i++) {
             QVector<double> x = _teach_sample[i].get_data();
             QVector<int> y = _perceptron.MakeOutputVector(_teach_sample[i]);
             _perceptron.Teach(x, y);
+//            _ui -> _status_bar -> showMessage(tr("Сеть обучается примеру %1").arg(QString::number(count)));
         }
     }
     _ui -> _action_classificate -> setEnabled(true);
@@ -106,6 +108,8 @@ void Classificator::on__action_classificate_triggered() {
                               tr("Невозможно открыть файл %1").arg(file_name));
         return;
     }
+    for (int i = 0; i < _class_map.size(); i++)
+        _ui -> _graph -> addGraph();
     while(false == file.atEnd()) {
         QStringList row_list = QString(file.readLine()).split('\t');
         double x = row_list.at(_index_x).toDouble();
@@ -115,8 +119,9 @@ void Classificator::on__action_classificate_triggered() {
         vector.push_back(x);
         vector.push_back(y);
 
-        qDebug() << _perceptron.Recognize(vector);
-//        _ui -> widget -> graph(0) -> setData()
+        int class_name = _perceptron.GetClass(vector);
+        _ui -> _graph -> graph(0) -> addData(x ,y);
     }
+    _ui -> _graph -> replot();
     file.close();
 }

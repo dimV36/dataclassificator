@@ -16,7 +16,7 @@
   <widget class="QWidget" name="_central_widget">
    <layout class="QGridLayout" name="gridLayout">
     <item row="0" column="0">
-     <widget class="QCustomPlot" name="widget" native="true"/>
+     <widget class="QCustomPlot" name="_graph" native="true"/>
     </item>
    </layout>
   </widget>
@@ -26,7 +26,7 @@
      <x>0</x>
      <y>0</y>
      <width>426</width>
-     <height>19</height>
+     <height>20</height>
     </rect>
    </property>
    <widget class="QMenu" name="_file_menu">

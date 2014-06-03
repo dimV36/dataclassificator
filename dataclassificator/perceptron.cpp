@@ -105,6 +105,22 @@
     }
 
 
+    int Perceptron::GetClass(QVector<double> x) {
+        QVector<int> reaction = Recognize(x);
+        for (int i = 0; i < reaction.size(); i++) {
+            if (reaction[i] == 1)
+                return (i + 1);
+        }
+        return 0;
+    }
+
+
+    /**
+     * Оператор присваивания
+     * @brief Perceptron::operator =
+     * @param perceptron
+     * @return
+     */
     Perceptron Perceptron::operator = (Perceptron &perceptron) {
         if (*this != perceptron) {
             _output = perceptron._output;
@@ -122,7 +138,12 @@
         return *this;
     }
 
-
+    /**
+     * Оператор сравнения на равенство
+     * @brief Perceptron::operator ==
+     * @param perceptron
+     * @return
+     */
     bool Perceptron::operator == (const Perceptron &perceptron) {
         if (_output == perceptron._output && _neurons == perceptron._neurons)
             return true;
