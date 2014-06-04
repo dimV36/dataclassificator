@@ -18,17 +18,23 @@ SOURCES += main.cpp\
     tablecolumnchooser.cpp \
     neuronexample.cpp \
     neuron.cpp \
-    perceptron.cpp
+    perceptron.cpp \
+    teachprocess.cpp \
+    addpointdialog.cpp
 
 HEADERS  += classificator.h \
     qcustomplot.h \
     tablecolumnchooser.h \
     neuronexample.h \
     neuron.h \
-    perceptron.h
+    perceptron.h \
+    teachprocess.h \
+    addpointdialog.h
 
 FORMS    += classificator.ui \
-    tablecolumnchooser.ui
+    tablecolumnchooser.ui \
+    teachprocess.ui \
+    addpointdialog.ui
 
 RESOURCES += \
     res/resource.qrc

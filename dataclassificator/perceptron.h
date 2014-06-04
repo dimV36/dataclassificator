@@ -18,7 +18,7 @@ public:
 
     QVector<int> Recognize(QVector<double> x);
     void InitWeights(int weight);
-    void Teach(QVector<double> x, QVector<int> y);
+    void Teach(QVector<double> x, QVector<int> y, int speed);
     QVector<int> MakeOutputVector(const NeuronExample &example);
     int GetClass(QVector<double> x);
 

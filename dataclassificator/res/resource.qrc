@@ -3,7 +3,7 @@
         <file>exit.png</file>
         <file>teach.png</file>
         <file>classificate.png</file>
-        <file>refresh.png</file>
         <file>open.png</file>
+        <file>point.png</file>
     </qresource>
 </RCC>

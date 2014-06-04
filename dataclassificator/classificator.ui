@@ -26,7 +26,7 @@
      <x>0</x>
      <y>0</y>
      <width>426</width>
-     <height>20</height>
+     <height>19</height>
     </rect>
    </property>
    <widget class="QMenu" name="_file_menu">
@@ -43,6 +43,7 @@
     </property>
     <addaction name="_action_teach"/>
     <addaction name="_action_classificate"/>
+    <addaction name="_action_add_point"/>
    </widget>
    <addaction name="_file_menu"/>
    <addaction name="_network_menu"/>
@@ -57,19 +58,9 @@
    <addaction name="_action_open_sample"/>
    <addaction name="_action_teach"/>
    <addaction name="_action_classificate"/>
+   <addaction name="_action_add_point"/>
   </widget>
   <widget class="QStatusBar" name="_status_bar"/>
-  <widget class="QToolBar" name="toolBar">
-   <property name="windowTitle">
-    <string>toolBar</string>
-   </property>
-   <attribute name="toolBarArea">
-    <enum>TopToolBarArea</enum>
-   </attribute>
-   <attribute name="toolBarBreak">
-    <bool>false</bool>
-   </attribute>
-  </widget>
   <action name="_action_open_sample">
    <property name="icon">
     <iconset resource="res/resource.qrc">
@@ -104,6 +95,15 @@
    </property>
    <property name="text">
     <string>Классифицировать данные</string>
+   </property>
+  </action>
+  <action name="_action_add_point">
+   <property name="icon">
+    <iconset resource="res/resource.qrc">
+     <normaloff>:/point.png</normaloff>:/point.png</iconset>
+   </property>
+   <property name="text">
+    <string>Добавить точку</string>
    </property>
   </action>
  </widget>

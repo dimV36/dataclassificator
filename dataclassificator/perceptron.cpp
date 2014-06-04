@@ -72,9 +72,8 @@
      * @param x - входной вектор
      * @param y - правильный выходной вектор
      */
-    void Perceptron::Teach(QVector<double> x, QVector<int> y) {
+    void Perceptron::Teach(QVector<double> x, QVector<int> y, int speed) {
         int delta;
-        int speed = 1; // скорость обучения
         QVector<int> t = Recognize(x);
         while (false == (t == y)) {
             // подстройка весов каждого нейрона
