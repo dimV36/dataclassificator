@@ -5,6 +5,8 @@ AddPointDialog::AddPointDialog(QWidget *parent) :
     QDialog(parent),
     _ui(new Ui::AddPointDialog) {
     _ui -> setupUi(this);
+    _ui -> _button_box -> button(_ui -> _button_box -> Cancel) -> setText(tr("Отмена"));
+
 }
 
 
