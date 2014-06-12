@@ -77,6 +77,7 @@ void Classificator::CreateTeachSample(QString file_name) {
                 _class_map.insert(class_name, 1);
             else
                 _class_map.insert(class_name, _class_map.size() + 1);
+            _color_map.insert(class_name, QColor().black());
         }
         /* Создаем пример выборки и храним его в массиве примеров */
         QVector<double> vector;
@@ -247,4 +248,17 @@ void Classificator::on__action_add_point_triggered() {
     _ui -> _graph -> xAxis -> setRange(_xrange.first, _xrange.second + 1);
     _ui -> _graph -> yAxis -> setRange(_yrange.first, _yrange.second + 1);
     _ui -> _graph -> replot();
+}
+
+
+/**
+ * Настройка цветов классов
+ * @brief Classificator::on__action_settings_triggered
+ */
+void Classificator::on__action_settings_triggered() {
+    ColorChooserDialog dialog;
+    dialog.set_classmap(_color_map);
+    if (dialog.exec() == QDialog::Accepted) {
+        _color_map = dialog.get_classmap();
+    }
 }

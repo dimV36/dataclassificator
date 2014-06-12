@@ -26,7 +26,7 @@
      <x>0</x>
      <y>0</y>
      <width>426</width>
-     <height>19</height>
+     <height>20</height>
     </rect>
    </property>
    <widget class="QMenu" name="_file_menu">
@@ -59,6 +59,7 @@
    <addaction name="_action_teach"/>
    <addaction name="_action_classificate"/>
    <addaction name="_action_add_point"/>
+   <addaction name="_action_settings"/>
   </widget>
   <widget class="QStatusBar" name="_status_bar"/>
   <action name="_action_open_sample">
@@ -104,6 +105,15 @@
    </property>
    <property name="text">
     <string>Добавить точку</string>
+   </property>
+  </action>
+  <action name="_action_settings">
+   <property name="icon">
+    <iconset resource="res/resource.qrc">
+     <normaloff>:/kservices.png</normaloff>:/kservices.png</iconset>
+   </property>
+   <property name="text">
+    <string>Настройки</string>
    </property>
   </action>
  </widget>

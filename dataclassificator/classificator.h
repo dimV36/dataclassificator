@@ -13,6 +13,7 @@
 #include "perceptron.h"
 #include "teachprocess.h"
 #include "addpointdialog.h"
+#include "colorchooserdialog.h"
 
 namespace Ui {
 class Classificator;
@@ -37,6 +38,8 @@ private slots:
 
     void on__action_add_point_triggered();
 
+    void on__action_settings_triggered();
+
 private:
     Ui::Classificator *_ui;
     /* Переменные отвечают за столбцы выбранных пользователем данных */
@@ -46,6 +49,7 @@ private:
     QVector<NeuronExample> _teach_sample;       // Выборка обучающих примеров
     Perceptron _perceptron;                     // Персептрон
     QMap<QString, int> _class_map;              // Карта соответствия имени номеру класса
+    QMap<QString, QColor> _color_map;           // Карта соответствия имени класса цвету
     QPair<int,int> _xrange;                     // Вспомогательные переменные,
                                                 // необходимы для установки минимального и максимального значения осей на графике
     QPair<int,int> _yrange;

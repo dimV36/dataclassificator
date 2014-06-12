@@ -1,7 +1,5 @@
 #include "perceptron.h"
 
-#include <QDebug>
-
     /**
      * Конструктор по умолчанию
      * @brief Perceptron::Perceptron

@@ -20,7 +20,8 @@ SOURCES += main.cpp\
     neuron.cpp \
     perceptron.cpp \
     teachprocess.cpp \
-    addpointdialog.cpp
+    addpointdialog.cpp \
+    colorchooserdialog.cpp
 
 HEADERS  += classificator.h \
     qcustomplot.h \
@@ -29,12 +30,14 @@ HEADERS  += classificator.h \
     neuron.h \
     perceptron.h \
     teachprocess.h \
-    addpointdialog.h
+    addpointdialog.h \
+    colorchooserdialog.h
 
 FORMS    += classificator.ui \
     tablecolumnchooser.ui \
     teachprocess.ui \
-    addpointdialog.ui
+    addpointdialog.ui \
+    colorchooserdialog.ui
 
 RESOURCES += \
     res/resource.qrc
