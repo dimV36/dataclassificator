@@ -1,7 +1,6 @@
 #include "colorchooserdialog.h"
 #include "ui_colorchooserdialog.h"
 
-#include <QDebug>
 
 ColorChooserDialog::ColorChooserDialog(QWidget *parent) :
     QDialog(parent),

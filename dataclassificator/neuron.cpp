@@ -1,6 +1,5 @@
 #include "neuron.h"
 
-#include <QDebug>
 
 /**
  * Конструктор по умолчанию

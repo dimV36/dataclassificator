@@ -31,14 +31,18 @@ private:
     void ShakeExamples();
     QPair<int,int> UpdateRange(QPair<int,int> range, double value);
 
+signals:
+    void SignalGraphColorWasChanged();
+
 private slots:
     void on__action_open_sample_triggered();
     void on__action_teach_triggered();
     void on__action_classificate_triggered();
-
     void on__action_add_point_triggered();
+    void on__action_color_settings_triggered();
 
-    void on__action_settings_triggered();
+    void SlotUpdateGraphColor();
+
 
 private:
     Ui::Classificator *_ui;

@@ -1,7 +1,6 @@
 #include "classificator.h"
 #include "ui_classificator.h"
 
-#include <QDebug>
 
 /**
  * Конструктор класса Classificator
@@ -17,6 +16,9 @@ Classificator::Classificator(QWidget *parent) :
     _ui -> _action_teach -> setEnabled(false);
     _ui -> _action_classificate -> setEnabled(false);
     _ui -> _action_add_point -> setEnabled(false);
+    _ui -> _action_color_settings -> setEnabled(false);
+    /* Обновление цвета графика */
+    connect(this, SIGNAL(SignalGraphColorWasChanged()), this, SLOT(SlotUpdateGraphColor()));
 }
 
 /**
@@ -89,7 +91,7 @@ void Classificator::CreateTeachSample(QString file_name) {
     file.close();
     /* Создаём объект персептрона: количество нейронов - количество классов, 2 - число входов (x,y) */
     _perceptron = Perceptron(_class_map.size(), 2);
-//    _perceptron.InitWeights(10);
+    _perceptron.InitWeights(1);
 }
 
 
@@ -136,6 +138,7 @@ void Classificator::on__action_open_sample_triggered() {
 
     CreateTeachSample(file_name);
     _ui -> _action_teach -> setEnabled(true);
+    _ui -> _action_color_settings -> setEnabled(true);
 }
 
 
@@ -146,7 +149,6 @@ void Classificator::on__action_open_sample_triggered() {
 void Classificator::on__action_teach_triggered() {
     int count = 0;   // Количество прогонов
     int speed = 0;   // Скорость обучения
-    ShakeExamples();
     TeachProcess process;
     if (process.exec() == QDialog::Accepted) {
         count = process.get_count();
@@ -156,13 +158,14 @@ void Classificator::on__action_teach_triggered() {
     _ui -> _status_bar -> showMessage(tr("Обучение начато"));
     while(count-- > 0) {
         for (int i = 0; i < _teach_sample.size(); i++) {
+            ShakeExamples();
             QVector<double> example = _teach_sample[i].get_data(); // Получаем данные примера
             QVector<int> result = _perceptron.MakeOutputVector(_teach_sample[i]); // Создаём вектор, соответствующий классу
             _perceptron.Teach(example, result, speed); // Обучаем персептрон примеру
             _ui -> _status_bar -> showMessage(tr("Обучение примеру %1. Осталось %2 раз(а)").arg(i + 1).arg(count));
         }
     }
-    _ui -> _status_bar -> showMessage(tr("Обучение завершено"), 10);
+    _ui -> _status_bar -> showMessage(tr("Обучение завершено"));
     _ui -> _action_add_point -> setEnabled(true);
     _ui -> _action_classificate -> setEnabled(true);
 }
@@ -173,6 +176,7 @@ void Classificator::on__action_teach_triggered() {
  * @brief Classificator::on__action_classificate_triggered
  */
 void Classificator::on__action_classificate_triggered() {
+    _ui -> _status_bar -> clearMessage();
     _ui -> _graph -> clearGraphs();                     // Очищаются все графики
     QString file_name = QFileDialog::getOpenFileName(this,
                                                      tr("Выбрать файл с тестовой выборкой"),
@@ -191,12 +195,13 @@ void Classificator::on__action_classificate_triggered() {
     _ui -> _graph -> legend -> setVisible(true);              // Показываем легенду
     /* На координатной плоскости создаём объекты графиков для всех классов */
     for (int i = 0; i < _class_map.size(); i++) {
+        QString class_name = _class_map.key(i + 1);
         _ui -> _graph -> addGraph();
         _ui -> _graph ->graph(i) -> setLineStyle(QCPGraph::lsNone);
-        QColor graph_color = QColor(30 + 15 * i, 255 - 20 * i, 255, 255);
+        QColor graph_color = _color_map.value(class_name);
         _ui -> _graph -> graph(i) -> setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssCircle, graph_color, graph_color, 4));
         /* Устанавливаем имя графику согласно карте соответствия */
-        _ui -> _graph -> graph(i) -> setName(_class_map.key(i + 1));
+        _ui -> _graph -> graph(i) -> setName(class_name);
     }
     while(false == file.atEnd()) {
         QStringList row_list = QString(file.readLine()).split('\t');
@@ -255,10 +260,27 @@ void Classificator::on__action_add_point_triggered() {
  * Настройка цветов классов
  * @brief Classificator::on__action_settings_triggered
  */
-void Classificator::on__action_settings_triggered() {
+void Classificator::on__action_color_settings_triggered() {
     ColorChooserDialog dialog;
     dialog.set_classmap(_color_map);
     if (dialog.exec() == QDialog::Accepted) {
         _color_map = dialog.get_classmap();
     }
+    /* Высылаем сигнал обновления цветов, если количество графиков не равно 0 */
+    if (false == (0 == _ui -> _graph -> graphCount()))
+        emit SignalGraphColorWasChanged();
+}
+
+
+/**
+ * Слот обновления цвета
+ * @brief Classificator::SlotUpdateGraphColor
+ */
+void Classificator::SlotUpdateGraphColor() {
+    for (int i = 0; i < _class_map.size(); i++) {
+        QString class_name = _class_map.key(i + 1);
+        QColor graph_color = _color_map.value(class_name);
+        _ui -> _graph -> graph(i) -> setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssCircle, graph_color, graph_color, 4));
+    }
+    _ui -> _graph -> replot();
 }

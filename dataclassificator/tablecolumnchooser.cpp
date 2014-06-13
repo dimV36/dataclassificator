@@ -1,6 +1,7 @@
 #include "tablecolumnchooser.h"
 #include "ui_tablecolumnchooser.h"
 
+
 TableColumnChooser::TableColumnChooser(QWidget *parent) :
     QDialog(parent),
     _ui(new Ui::TableColumnChooser) {

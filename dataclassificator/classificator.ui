@@ -44,6 +44,8 @@
     <addaction name="_action_teach"/>
     <addaction name="_action_classificate"/>
     <addaction name="_action_add_point"/>
+    <addaction name="separator"/>
+    <addaction name="_action_color_settings"/>
    </widget>
    <addaction name="_file_menu"/>
    <addaction name="_network_menu"/>
@@ -59,7 +61,7 @@
    <addaction name="_action_teach"/>
    <addaction name="_action_classificate"/>
    <addaction name="_action_add_point"/>
-   <addaction name="_action_settings"/>
+   <addaction name="_action_color_settings"/>
   </widget>
   <widget class="QStatusBar" name="_status_bar"/>
   <action name="_action_open_sample">
@@ -107,13 +109,13 @@
     <string>Добавить точку</string>
    </property>
   </action>
-  <action name="_action_settings">
+  <action name="_action_color_settings">
    <property name="icon">
     <iconset resource="res/resource.qrc">
      <normaloff>:/kservices.png</normaloff>:/kservices.png</iconset>
    </property>
    <property name="text">
-    <string>Настройки</string>
+    <string>Настройки цвета классов</string>
    </property>
   </action>
  </widget>
