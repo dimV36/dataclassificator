@@ -25,12 +25,15 @@ win32 {
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    graphicsview.cpp
+    graphicsview.cpp \
+    neuronnetworksettingsdialog.cpp
 
 HEADERS  += mainwindow.h \
-    graphicsview.h
+    graphicsview.h \
+    neuronnetworksettingsdialog.h
 
-FORMS    += mainwindow.ui
+FORMS    += mainwindow.ui \
+    neuronnetworksettingsdialog.ui
 
 RESOURCES += \
     res/res.qrc

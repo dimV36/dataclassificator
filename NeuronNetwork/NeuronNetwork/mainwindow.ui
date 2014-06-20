@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>Многослойная нейронная сеть</string>
   </property>
   <widget class="QWidget" name="_central_widget">
    <layout class="QGridLayout" name="_grid_layout">
@@ -29,6 +29,25 @@
      <height>20</height>
     </rect>
    </property>
+   <widget class="QMenu" name="_menu_file">
+    <property name="title">
+     <string>Файл</string>
+    </property>
+    <addaction name="_action_open"/>
+    <addaction name="separator"/>
+    <addaction name="_action_exit"/>
+   </widget>
+   <widget class="QMenu" name="_menu_network">
+    <property name="title">
+     <string>Сеть</string>
+    </property>
+    <addaction name="_action_network_settings"/>
+    <addaction name="separator"/>
+    <addaction name="_action_teach"/>
+    <addaction name="_action_classificate"/>
+   </widget>
+   <addaction name="_menu_file"/>
+   <addaction name="_menu_network"/>
   </widget>
   <widget class="QToolBar" name="_tool_bar">
    <attribute name="toolBarArea">
@@ -37,8 +56,57 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
+   <addaction name="_action_open"/>
+   <addaction name="_action_teach"/>
+   <addaction name="_action_classificate"/>
+   <addaction name="_action_network_settings"/>
   </widget>
   <widget class="QStatusBar" name="_status_bar"/>
+  <action name="_action_open">
+   <property name="icon">
+    <iconset resource="res/res.qrc">
+     <normaloff>:/open.png</normaloff>:/open.png</iconset>
+   </property>
+   <property name="text">
+    <string>Открыть файл с выборкой</string>
+   </property>
+  </action>
+  <action name="_action_exit">
+   <property name="icon">
+    <iconset resource="res/res.qrc">
+     <normaloff>:/exit.png</normaloff>:/exit.png</iconset>
+   </property>
+   <property name="text">
+    <string>Выход</string>
+   </property>
+  </action>
+  <action name="_action_teach">
+   <property name="icon">
+    <iconset resource="res/res.qrc">
+     <normaloff>:/teach.png</normaloff>:/teach.png</iconset>
+   </property>
+   <property name="text">
+    <string>Обучить</string>
+   </property>
+  </action>
+  <action name="_action_classificate">
+   <property name="icon">
+    <iconset resource="res/res.qrc">
+     <normaloff>:/classificate.png</normaloff>:/classificate.png</iconset>
+   </property>
+   <property name="text">
+    <string>Классифицировать данные</string>
+   </property>
+  </action>
+  <action name="_action_network_settings">
+   <property name="icon">
+    <iconset resource="res/res.qrc">
+     <normaloff>:/kservices.png</normaloff>:/kservices.png</iconset>
+   </property>
+   <property name="text">
+    <string>Конфигурация сети</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
@@ -49,6 +117,25 @@
    <container>1</container>
   </customwidget>
  </customwidgets>
- <resources/>
- <connections/>
+ <resources>
+  <include location="res/res.qrc"/>
+ </resources>
+ <connections>
+  <connection>
+   <sender>_action_exit</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>close()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>291</x>
+     <y>184</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>291</x>
+     <y>184</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>
