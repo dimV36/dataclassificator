@@ -11,16 +11,10 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = NeuronNetwork
 TEMPLATE = app
 
+#QGVCore library
+LIBS += -L$$OUT_PWD/../lib -lQGVCore
 INCLUDEPATH += $$PWD/../include
 DEPENDPATH += $$PWD/../include
-#QGVCore library
-#unix {
-    LIBS += -L$$OUT_PWD/../lib -lQGVCore
-#    LIBS += -L/usr/lib64 -lQGVCore
-#}
-#win32 {
-#    LIBS += 0L$$OUT_PWD/../lib -lQGVCore
-#}
 
 SOURCES += main.cpp\
         mainwindow.cpp \
@@ -42,5 +36,3 @@ FORMS    += mainwindow.ui \
 RESOURCES += \
     res/res.qrc
 
-#win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../lib/ -lQGVCore
-#else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../lib/ -lQGVCored
