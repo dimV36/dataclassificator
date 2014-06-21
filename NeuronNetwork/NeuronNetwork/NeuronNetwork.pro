@@ -26,14 +26,19 @@ win32 {
 SOURCES += main.cpp\
         mainwindow.cpp \
     graphicsview.cpp \
-    neuronnetworksettingsdialog.cpp
+    neuronnetworksettingsdialog.cpp \
+    neuronexample.cpp \
+    tablecolumnchooser.cpp
 
 HEADERS  += mainwindow.h \
     graphicsview.h \
-    neuronnetworksettingsdialog.h
+    neuronnetworksettingsdialog.h \
+    neuronexample.h \
+    tablecolumnchooser.h
 
 FORMS    += mainwindow.ui \
-    neuronnetworksettingsdialog.ui
+    neuronnetworksettingsdialog.ui \
+    tablecolumnchooser.ui
 
 RESOURCES += \
     res/res.qrc

@@ -6,6 +6,11 @@ GraphicsView::GraphicsView(QWidget *parent) :
 }
 
 
+/**
+ * Переопределение функции масштабирования изображения
+ * @brief GraphicsView::wheelEvent
+ * @param event
+ */
 void GraphicsView::wheelEvent(QWheelEvent *event) {
     qreal scale_factor = qPow(2.0, event -> delta() / 240.0);
     qreal factor = transform().scale(scale_factor, scale_factor).mapRect(QRectF(0, 0, 1, 1)).width();
