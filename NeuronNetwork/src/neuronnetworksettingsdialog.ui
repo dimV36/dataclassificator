@@ -14,13 +14,6 @@
    <string>Конфигурация сети</string>
   </property>
   <layout class="QGridLayout" name="_grid_layout">
-   <item row="3" column="1">
-    <widget class="QSpinBox" name="_box_layout_count">
-     <property name="minimum">
-      <number>1</number>
-     </property>
-    </widget>
-   </item>
    <item row="2" column="0">
     <widget class="QLabel" name="_label_output">
      <property name="text">
@@ -49,13 +42,10 @@
      </property>
     </widget>
    </item>
-   <item row="5" column="0" colspan="2">
-    <widget class="QDialogButtonBox" name="_button_box">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-     <property name="standardButtons">
-      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+   <item row="0" column="0">
+    <widget class="QLabel" name="_label_input">
+     <property name="text">
+      <string>Количество входов</string>
      </property>
     </widget>
    </item>
@@ -66,10 +56,20 @@
      </property>
     </widget>
    </item>
-   <item row="0" column="0">
-    <widget class="QLabel" name="_label_input">
-     <property name="text">
-      <string>Количество входов</string>
+   <item row="7" column="0" colspan="2">
+    <widget class="QDialogButtonBox" name="_button_box">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="1">
+    <widget class="QSpinBox" name="_box_layout_count">
+     <property name="minimum">
+      <number>1</number>
      </property>
     </widget>
    </item>
@@ -78,6 +78,32 @@
      <property name="minimum">
       <number>1</number>
      </property>
+    </widget>
+   </item>
+   <item row="5" column="0">
+    <widget class="QLabel" name="_label_activation_function">
+     <property name="text">
+      <string>Функция активации</string>
+     </property>
+    </widget>
+   </item>
+   <item row="5" column="1">
+    <widget class="QComboBox" name="_box_activation_function">
+     <item>
+      <property name="text">
+       <string>Жёсткая пороговая функция</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Сигмоидальная функция</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Гиперболический тангенс</string>
+      </property>
+     </item>
     </widget>
    </item>
   </layout>

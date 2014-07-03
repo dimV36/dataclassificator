@@ -6,16 +6,9 @@
 #include <QMessageBox>
 #include <QFileDialog>
 
-#ifdef Q_OS_LINUX
-#include <QGVCore/QGVScene.h>
-#include <QGVCore/QGVNode.h>
-#include <QGVCore/QGVEdge.h>
-#endif
-#ifdef Q_OS_WIN
 #include <QGVScene.h>
 #include <QGVNode.h>
 #include <QGVEdge.h>
-#endif
 
 #include "neuronnetworksettingsdialog.h"
 #include "neuronexample.h"
