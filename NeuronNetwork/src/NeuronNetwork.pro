@@ -21,13 +21,25 @@ SOURCES += main.cpp\
     graphicsview.cpp \
     neuronnetworksettingsdialog.cpp \
     neuronexample.cpp \
-    tablecolumnchooser.cpp
+    tablecolumnchooser.cpp \
+    networkfunction.cpp \
+    neurallink.cpp \
+    neuralnetwork.cpp \
+    neuron.cpp \
+    neuronfactory.cpp \
+    trainalgorithm.cpp
 
 HEADERS  += mainwindow.h \
     graphicsview.h \
     neuronnetworksettingsdialog.h \
     neuronexample.h \
-    tablecolumnchooser.h
+    tablecolumnchooser.h \
+    networkfunction.h \
+    neurallink.h \
+    neuralnetwork.h \
+    neuron.h \
+    neuronfactory.h \
+    trainalgorithm.h
 
 FORMS    += mainwindow.ui \
     neuronnetworksettingsdialog.ui \
@@ -35,4 +47,6 @@ FORMS    += mainwindow.ui \
 
 RESOURCES += \
     res/res.qrc
+
+OTHER_FILES +=
 

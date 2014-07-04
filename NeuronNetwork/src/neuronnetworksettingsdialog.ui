@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>371</width>
-    <height>161</height>
+    <width>396</width>
+    <height>190</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -91,17 +91,17 @@
     <widget class="QComboBox" name="_box_activation_function">
      <item>
       <property name="text">
-       <string>Жёсткая пороговая функция</string>
+       <string>Линейная функция</string>
       </property>
      </item>
      <item>
       <property name="text">
-       <string>Сигмоидальная функция</string>
+       <string>Однополярный сигмоид</string>
       </property>
      </item>
      <item>
       <property name="text">
-       <string>Гиперболический тангенс</string>
+       <string>Биполярный сигмоид</string>
       </property>
      </item>
     </widget>
