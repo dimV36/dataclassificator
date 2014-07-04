@@ -44,7 +44,7 @@ void NeuralLink::set_weight_correction_term(double weight_correction_term) {
 }
 
 
-double NeuralLink::get_weight_correction_term() {
+double NeuralLink::get_weight_correction_term() const {
     return _weight_correction_term;
 }
 

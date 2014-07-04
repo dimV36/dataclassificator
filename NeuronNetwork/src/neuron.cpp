@@ -63,13 +63,13 @@ double Neuron::Fire() {
         NeuralLink* current_link = _links_to_neurons[link];
         Neuron* current_neuron_linked_to = current_link -> get_neuron_linked_to();
 
-        double delta_weight = current_link -> get_weight();
-        double	delta_charge = _sum_of_charges;
-        double 	delta_x_i = (_network_function -> Process(delta_charge));
-        double 	delta_output = delta_x_i * delta_weight;
+        double weight = current_link -> get_weight();
+        double charge = _sum_of_charges;
+        double x_i = (_network_function -> Process(charge));
+        double output = x_i * weight;
 
-        current_link -> set_last_translated_signal(delta_x_i);
-        current_neuron_linked_to -> Input(delta_output);
+        current_link -> set_last_translated_signal(x_i);
+        current_neuron_linked_to -> Input(output);
     }
     return _sum_of_charges;
 }
@@ -116,7 +116,7 @@ QVector<NeuralLink*> Neuron::get_inputlinks() const {
 
 
 double Neuron::PerformTrainingProcess(double) {
-    return 0;
+    return 0.0;
 }
 
 
@@ -135,206 +135,231 @@ void Neuron::ShowNeuronState() {
 
 
 
-/*** http://habrahabr.ru/post/198268/ ***/
-
-template <typename T>
-OutputLayerNeuronDecorator<T>::~OutputLayerNeuronDecorator()
-{
-	delete mNeuron;
-}
-
-template <typename T>
-HiddenLayerNeuronDecorator<T>::~HiddenLayerNeuronDecorator()
-{
-	delete mNeuron;
+/**************************** Реализация методов класса OutputLayerNeuron ****************************/
+OutputLayerNeuron::OutputLayerNeuron(Neuron *neuron) {
+    _output_charge = 0.0;
+    _neuron = neuron;
 }
 
 
-template <typename T>
-double HiddenLayerNeuronDecorator<T>::Fire()
-{
-	/*
-	 * 		Hidden unit applies its activation function to compute its output signal
-	 * 		and sends this signal to all units in the layer above (output units).
-	*/
-
-	for(int iLink = 0; iLink < this->GetNumOfLinks(); iLink++){
-
-		NeuralLink<T> * pCurrentLink = mNeuron->at(iLink);
-		Neuron<T> * pCurrentNeuronLinkedTo = pCurrentLink->GetNeuronLinkedTo();
-
-		const double dWeight = mNeuron->at(iLink)->GetWeight();
-		double	dCharge = mNeuron->GetSumOfCharges();
-		double	dZj = (mNeuron->Process(dCharge));
-		double 	dOutput = dZj*dWeight;
-
-		pCurrentLink->SetLastTranslatedSignal(dZj);
-
-		pCurrentNeuronLinkedTo->Input( dOutput );
-
-		//std::cout << "Link: " << iLink << ", " << "Hidden Neuron fired: " << dOutput << " as func of: " << dCharge << " * " << dWeight << std::endl;
-	}
-
-	return mNeuron->GetSumOfCharges();
-}
-
-template <typename T>
-double OutputLayerNeuronDecorator<T>::Fire()
-{
-
-	//double temp = mNeuron->GetSumOfCharges();
-	double output = this->Process();
-	mOutputCharge = output;
-	//std::cout << "Output Neuron fired: " << output << " as func of: " << temp << std::endl;
-	return output;
-
-};
-
-template <typename T>
-double Neuron<T>::Fire()
-{
-	for(int iLink = 0; iLink < this->GetNumOfLinks(); iLink++){
-		NeuralLink<T> * pCurrentLink = mLinksToNeurons[iLink];
-		Neuron<T> * pCurrentNeuronLinkedTo = pCurrentLink->GetNeuronLinkedTo();
-
-		const double dWeight = pCurrentLink->GetWeight();
-		double	dCharge = mSumOfCharges;
-		double 	dXi =  (mNetFunc->Process(dCharge));
-		double 	dOutput = dXi*dWeight;
-
-		pCurrentLink->SetLastTranslatedSignal(dXi);
-		pCurrentNeuronLinkedTo->Input( dOutput );
-		//std::cout << "Link: " << iLink << ", Neuron fired: " << dOutput << " as func of: " << dCharge << " * " << dWeight << std::endl;
-		//mLinksToNeurons[iLink]->GetNeuronLinkedTo()->Input(mNetFunc->Process(mSumOfCharges*mLinksToNeurons[iLink]->GetWeight()));
-	}
-	//mSumOfCharges = 0;
-	return mSumOfCharges;
-}
-
-template <typename T>
-double	Neuron<T>::GetSumOfCharges()
-{
-
-	return mSumOfCharges;
+OutputLayerNeuron::~OutputLayerNeuron() {
+    delete _neuron;
 }
 
 
-
-
-
-
-template <typename T>
-double HiddenLayerNeuronDecorator<T>::PerformTrainingProcess(double inTarget)
-{
-
-	/*
-	 * 		Hidden unit sums its delta inputs from units in the layer above
-	*/
-	double dDeltaInputs = 0;
-	for(int iOutputLink = 0; iOutputLink < (this->GetNumOfLinks()); iOutputLink++){
-			NeuralLink<T> * pOutputLink = (this->GetLinksToNeurons()).at(iOutputLink);
-			double dErrorInformationTerm = pOutputLink->GetErrorInFormationTerm();
-			double dWeight = pOutputLink->GetWeight();
-			dDeltaInputs = dDeltaInputs + (dWeight*dErrorInformationTerm);
-	}
-
-/*	for(int iOutputLink = 0; iOutputLink < (this->GetNumOfLinks()); iOutputLink++){
-			NeuralLink * pOutputLink = (this->GetLinksToNeurons()).at(iOutputLink);
-			pOutputLink->UpdateWeight();
-	}*/
-
-	double dErrorInformationTermj = dDeltaInputs * (this->Derivative());
-	//std::cout << "dErrorInformationTermjHidden: " << dErrorInformationTermj << " as: " << dDeltaInputs << " * " << this->Derivative() << " .Derivative of:  " << mNeuron->GetSumOfCharges()<< std::endl;
-	//std::cin.get();
-	/*
-	 * 		For every link to that hidden neuron, (inputLinks) calculate its weight correction term
-	 * 		and update the link with it.
-	*/
-	for(unsigned int iInputLink = 0; iInputLink < (this->GetInputLink()).size(); iInputLink++){
-		NeuralLink<T> * pInputLink = (this->GetInputLink()).at(iInputLink);
-		double Xi = pInputLink->GetLastTranslatedSignal();
-		double dWeightCorrectionTerm = Xi*dErrorInformationTermj;
-		//std::cout << "dWeightCorrectionTerm: " << dWeightCorrectionTerm << std::endl;
-		pInputLink->SetWeightCorrectionTerm(LearningRate*dWeightCorrectionTerm);
-
-
-		/*
-		 * 		Then hidden unit has to tell the input neurons the value of it ErrorInformationTerm, so we are setting its value
-		 * 		in the link object.
-		 */
-
-		pInputLink->SetErrorInFormationTerm(dErrorInformationTermj);
-	}
-	return 0;
-}
-
-template <typename T>
-double OutputLayerNeuronDecorator<T>::PerformTrainingProcess(double inTarget)
-{
-	double res;
-	double dErrorInformationTerm = (inTarget - mOutputCharge) * mNeuron->Derivative();
-	res = pow(inTarget - mOutputCharge,2);
-	//std::cout << "dErrorInformationTermOutput: " << dErrorInformationTerm << " as: " << "(" << inTarget << " - " << mOutputCharge << ")" << " * " << mNeuron->Derivative() << " .Derivative of:  " << mNeuron->GetSumOfCharges()<< std::endl;
-	//std::cin.get();
-
-	/*
-	 * 		For every link to that output, (inputLinks) calculate its weight correction term
-	 * 		and update the link with it.
-	*/
-	for(unsigned int iInputLink = 0; iInputLink < (this->GetInputLink()).size(); iInputLink++){
-		NeuralLink<T> * pInputLink = (this->GetInputLink()).at(iInputLink);
-		double Zj = pInputLink->GetLastTranslatedSignal();
-		double dWeightCorrectionTerm = Zj*dErrorInformationTerm;
-		//std::cout << "dWeightCorrectionTerm: " << dWeightCorrectionTerm << std::endl;
-		pInputLink->SetWeightCorrectionTerm(LearningRate*dWeightCorrectionTerm);
-
-
-		/*
-		 * 		Then output unit has to tell the hidden neurons the value of it ErrorInformationTerm, so we are setting its value
-		 * 		in the link object.
-		 */
-
-		pInputLink->SetErrorInFormationTerm(dErrorInformationTerm);
-	}
-
-
-	return res;
+QVector<NeuralLink*>& OutputLayerNeuron::get_input_links() const {
+    return _neuron -> get_links_to_neurons();
 }
 
 
-
-template <typename T>
-void HiddenLayerNeuronDecorator<T>::PerformWeightsUpdating()
-{
-	for(unsigned int iInputLink = 0; iInputLink < (this->GetInputLink()).size(); iInputLink++){
-		NeuralLink<T> * pInputLink = (this->GetInputLink()).at(iInputLink);
-
-		pInputLink->UpdateWeight();
-		//std::cout<<"";
-	}
-}
-
-template <typename T>
-void OutputLayerNeuronDecorator<T>::PerformWeightsUpdating()
-{
-	for(unsigned int iInputLink = 0; iInputLink < (this->GetInputLink()).size(); iInputLink++){
-		NeuralLink<T> * pInputLink = (this->GetInputLink()).at(iInputLink);
-
-		pInputLink->UpdateWeight();
-		//std::cout<<"";
-	}
+NeuralLink* OutputLayerNeuron::at(int index) {
+    return _neuron -> at(index);
 }
 
 
+void OutputLayerNeuron::set_link_to_neuron(NeuralLink *link) {
+    _neuron -> set_link_to_neuron(link);
+}
 
-template class Neuron<double>;
-template class Neuron<float>;
-template class Neuron<int>;
 
-template class OutputLayerNeuronDecorator<double>;
-template class OutputLayerNeuronDecorator<float>;
-template class OutputLayerNeuronDecorator<int>;
+double OutputLayerNeuron::get_sum_of_charges() const {
+    return _neuron -> get_sum_of_charges();
+}
 
-template class HiddenLayerNeuronDecorator<double>;
-template class HiddenLayerNeuronDecorator<float>;
-template class HiddenLayerNeuronDecorator<int>;
+
+void OutputLayerNeuron::ResetSumOfCharges() {
+    _neuron -> ResetSumOfCharges();
+}
+
+
+void OutputLayerNeuron::Input(double input_data) {
+    _neuron -> Input(input_data);
+}
+
+
+double OutputLayerNeuron::Fire() {
+    double output = this -> Process();
+    _output_charge = output;
+    return output;
+}
+
+
+int OutputLayerNeuron::get_number_of_links() const {
+    return _neuron -> get_number_of_links();
+}
+
+
+double OutputLayerNeuron::Process() {
+    return _neuron -> Process();
+}
+
+
+double OutputLayerNeuron::Process(double value) {
+    return _neuron -> Process(value);
+}
+
+
+double OutputLayerNeuron::Derivative() {
+    return _neuron -> Derivative();
+}
+
+
+void OutputLayerNeuron::set_input_link(NeuralLink *link) {
+    _neuron -> set_input_link(link);
+}
+
+
+QVector<NeuralLink*>& OutputLayerNeuron::get_input_links() const {
+    return _neuron -> get_input_links();
+}
+
+
+double OutputLayerNeuron::PerformTrainingProcess(double target) {
+    double result;
+    double error_in_formation_term = (target - _output_charge) * _neuron -> Derivative();
+    result = qPow(target - _output_charge, 2);
+    for (int i = 0; i < (this -> get_input_links()).size(); i++) {
+        NeuralLink *input_link = (this -> get_input_links()).at(i);
+        double z_j = input_link -> get_last_translated_signal();
+        double weight_correction_term = z_j * error_in_formation_term;
+        input_link -> set_weight_correction_term(LEARNING_RATE * weight_correction_term);
+        input_link -> set_error_in_formation_term(error_in_formation_term);
+    }
+    return result;
+}
+
+
+void OutputLayerNeuron::PerformWeightsUpdating() {
+    for (int i = 0; i < (this -> get_input_links()).size(); i++) {
+        NeuralLink *input_link = (this -> get_input_links()).at(i);
+        input_link -> UpdateWeight();;
+    }
+}
+
+
+void OutputLayerNeuron::ShowNeuronState() {
+    _neuron -> ShowNeuronState();
+}
+
+
+/**************************** Реализация методов класса HiddenLayerNeuron ****************************/
+
+
+HiddenLayerNeuron::HiddenLayerNeuron(Neuron *neuron) {
+    _neuron = neuron;
+}
+
+
+HiddenLayerNeuron::~HiddenLayerNeuron() {
+    delete _neuron;
+}
+
+
+QVector<NeuralLink*>& HiddenLayerNeuron::get_input_links() const {
+    return _neuron -> get_links_to_neurons();
+}
+
+
+NeuralLink* HiddenLayerNeuron::at(int index) {
+    return _neuron -> at(index);
+}
+
+
+void HiddenLayerNeuron::set_link_to_neuron(NeuralLink *link) {
+    _neuron -> set_link_to_neuron(link);
+}
+
+
+double HiddenLayerNeuron::get_sum_of_charges() const {
+    return _neuron -> get_sum_of_charges();
+}
+
+
+void HiddenLayerNeuron::ResetSumOfCharges() {
+    _neuron -> ResetSumOfCharges();
+}
+
+
+void HiddenLayerNeuron::Input(double input_data) {
+    _neuron -> Input(input_data);
+}
+
+
+double HiddenLayerNeuron::Fire() {
+    for (int i = 0; i < this -> get_number_of_links(); i++) {
+        NeuralLink *current_link = _neuron -> at(i);
+        Neuron *current_neuron_linked_to = current_link -> get_neuron_linked_to();
+
+        const double weight = _neuron -> at(i) -> get_weight();
+        double	charge = _neuron -> get_sum_of_charges();
+        double	z_j = _neuron -> Process(charge);
+        double 	output = z_j * weight;
+
+        current_link -> set_last_translated_signal(z_j);
+        current_neuron_linked_to -> Input(output);
+    }
+    return _neuron -> get_sum_of_charges();
+}
+
+
+int HiddenLayerNeuron::get_number_of_links() const {
+    return _neuron -> get_number_of_links();
+}
+
+
+double HiddenLayerNeuron::Process() {
+    return _neuron -> Process();
+}
+
+
+double HiddenLayerNeuron::Process(double value) {
+    return _neuron -> Process(value);
+}
+
+
+double HiddenLayerNeuron::Derivative() {
+    return _neuron -> Derivative();
+}
+
+
+void HiddenLayerNeuron::set_input_link(NeuralLink *link) {
+    _neuron -> set_input_link(link);
+}
+
+
+QVector<NeuralLink*>& HiddenLayerNeuron::get_input_links() const {
+    return _neuron -> get_input_links();
+}
+
+
+double HiddenLayerNeuron::PerformTrainingProcess(double target) {
+    double delta_inputs = 0.0;
+    for (int i = 0; i < this -> get_number_of_links(); i++) {
+        NeuralLink *output_link = this -> get_links_to_neurons().at(i);
+        double error_in_formation_term = output_link -> get_error_in_formation_term();
+        double weight = output_link -> get_weight();
+        delta_inputs = delta_inputs + weight * error_in_formation_term;
+    }
+    double error_in_formation_term_j = delta_inputs * this -> Derivative();
+    for (int i = 0; i < this -> get_input_links().size(); i++) {
+        NeuralLink *input_link = this -> get_input_links().at(i);
+        double x_i = input_link -> get_last_translated_signal();
+        double weight_correction_term = x_i * error_in_formation_term_j;
+        input_link -> set_weight_correction_term(LEARNING_RATE * weight_correction_term);
+        input_link -> set_error_in_formation_term(error_in_formation_term_j);
+    }
+    return 0;
+}
+
+
+void HiddenLayerNeuron::PerformWeightsUpdating() {
+    for (int i = 0; i < (this -> get_input_links()).size(); i++) {
+        NeuralLink *input_link = (this -> get_input_links()).at(i);
+        input_link -> UpdateWeight();
+    }
+}
+
+
+void HiddenLayerNeuron::ShowNeuronState() {
+    _neuron -> ShowNeuronState();
+}

@@ -24,8 +24,8 @@ NetworkFunction::~NetworkFunction() {
  * @param value
  * @return
  */
-double NetworkFunction::Process(double value) {
-
+double NetworkFunction::Process(double) {
+    return 0.0;
 }
 
 
@@ -35,11 +35,11 @@ double NetworkFunction::Process(double value) {
  * @param value
  * @return
  */
-double NetworkFunction::Derivative(double value) {
-
+double NetworkFunction::Derivative(double) {
+    return 0.0;
 }
 
-/**************************** Определение методов класса Linear ****************************/
+/**************************** Реализация методов класса Linear ****************************/
 Linear::Linear() {
 
 }
@@ -60,7 +60,7 @@ double Linear::Derivative(double) {
 }
 
 
-/**************************** Определение методов класса Sigmoid ****************************/
+/**************************** Реализация методов класса Sigmoid ****************************/
 Sigmoid::Sigmoid() {
 
 }
@@ -71,17 +71,17 @@ Sigmoid::~Sigmoid() {
 }
 
 
-Sigmoid::Process(double value) {
+double Sigmoid::Process(double value) {
     return (1 / (1 + exp(-value)));
 }
 
 
-Sigmoid::Derivative(double value) {
+double Sigmoid::Derivative(double value) {
     return Process(value) * (1 - Process(value));
 }
 
 
-/**************************** Определение методов класса BipolarSigmoid ****************************/
+/**************************** Реализация методов класса BipolarSigmoid ****************************/
 
 
 BipolarSigmoid::BipolarSigmoid() {
@@ -94,11 +94,11 @@ BipolarSigmoid::~BipolarSigmoid() {
 }
 
 
-BipolarSigmoid::Process(double value) {
+double BipolarSigmoid::Process(double value) {
     return (2 / (1 + exp(-value)) - 1);
 }
 
 
-BipolarSigmoid::Derivative(double value) {
+double BipolarSigmoid::Derivative(double value) {
     return (1 - qPow(Process(value), 2)) / 2;
 }

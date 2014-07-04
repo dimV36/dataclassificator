@@ -9,9 +9,9 @@ public:
     NetworkFunction();
     virtual ~NetworkFunction();
     /* Функция */
-    virtual double Process(double value) = 0;
+    virtual double Process(double);
     /* Производная */
-    virtual double Derivative(double value) = 0;
+    virtual double Derivative(double);
 };
 
 

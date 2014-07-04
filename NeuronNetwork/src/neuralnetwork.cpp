@@ -1,12 +1,4 @@
-/*
- * NeuralNetwork.cpp
- *
- *  Created on: Sep 20, 2013
- *      Author: cheryuri
- */
-
-
-#include "NeuralNetworks/NeuralNetwork.h"
+#include "neuralnetwork.h"
 
 template <typename T>
 NeuralNetwork<T>::NeuralNetwork( const int& inInputs, const int& inOutputs, const int& inNumOfHiddenLayers, const int& inNumOfNeuronsInHiddenLayers, const char * inTypeOfNeuralNetwork )

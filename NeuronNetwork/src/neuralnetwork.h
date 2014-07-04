@@ -10,7 +10,7 @@
 
 
 
-#include "NeuronFactory.h"
+#include "neuronfactory.h"
 #include "trainAlgorithm.h"
 #include <string.h>
 #include <iostream>
