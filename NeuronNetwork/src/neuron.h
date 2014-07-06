@@ -27,7 +27,7 @@ public:
     Neuron(QVector<Neuron *> &neurons_link_to, NetworkFunction *function);
     virtual ~Neuron();
 
-    virtual QVector<NeuralLink*>& get_links_to_neurons() const;
+    virtual QVector<NeuralLink *> get_links_to_neurons() const;
     virtual NeuralLink* at(const int index_of_neural_link);
 
     virtual void set_link_to_neuron(NeuralLink *link);
@@ -42,7 +42,7 @@ public:
     virtual double Derivative();
 
     virtual void set_input_link(NeuralLink *link);
-    virtual QVector<NeuralLink*> &get_input_links() const;
+    virtual QVector<NeuralLink*> get_input_links() const;
 
     virtual double PerformTrainingProcess(double);
     virtual void PerformWeightsUpdating();
@@ -61,7 +61,7 @@ public:
     OutputLayerNeuron(Neuron *neuron);
     virtual ~OutputLayerNeuron();
 
-    virtual QVector<NeuralLink*>& get_links_to_neurons() const;
+    virtual QVector<NeuralLink*> get_links_to_neurons() const;
     virtual NeuralLink* at(int index);
     virtual void set_link_to_neuron(NeuralLink *link);
     virtual double get_sum_of_charges() const;
@@ -77,7 +77,7 @@ public:
     virtual double Derivative();
 
     virtual void set_input_link(NeuralLink *link);
-    virtual QVector<NeuralLink*>& get_input_links() const;
+    virtual QVector<NeuralLink*> get_input_links() const;
 
     virtual double PerformTrainingProcess(double target);
     virtual void PerformWeightsUpdating();
@@ -90,10 +90,10 @@ class HiddenLayerNeuron : public Neuron {
 protected:
     Neuron *_neuron;
 public:
-    OutputLayerNeuron(Neuron *neuron);
-    virtual ~OutputLayerNeuron();
+    HiddenLayerNeuron(Neuron *neuron);
+    virtual ~HiddenLayerNeuron();
 
-    virtual QVector<NeuralLink*>& get_links_to_neurons() const;
+    virtual QVector<NeuralLink*> get_links_to_neurons() const;
     virtual NeuralLink* at(int index);
     virtual void set_link_to_neuron(NeuralLink *link);
     virtual double get_sum_of_charges() const;
@@ -109,9 +109,9 @@ public:
     virtual double Derivative();
 
     virtual void set_input_link(NeuralLink *link);
-    virtual QVector<NeuralLink*>& get_input_links() const;
+    virtual QVector<NeuralLink*> get_input_links() const;
 
-    virtual double PerformTrainingProcess(double target);
+    virtual double PerformTrainingProcess(double);
     virtual void PerformWeightsUpdating();
     virtual void ShowNeuronState();
 };

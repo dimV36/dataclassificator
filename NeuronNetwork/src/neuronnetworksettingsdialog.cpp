@@ -35,6 +35,12 @@ int NeuronNetworkSettingsDialog::get_neurons_in_layout() const {
 }
 
 
+ActivationFunction NeuronNetworkSettingsDialog::get_activation_function() const {
+    int choosen_row = _ui -> _box_activation_function -> currentIndex();
+    return ActivationFunction(choosen_row);
+}
+
+
 void NeuronNetworkSettingsDialog::set_input(const int value) {
     _ui -> _box_input -> setValue(value);
 }
@@ -52,4 +58,9 @@ void NeuronNetworkSettingsDialog::set_layout_count(const int value) {
 
 void NeuronNetworkSettingsDialog::set_neurons_in_layout(const int value) {
     _ui -> _box_neutons_in_layout -> setValue(value);
+}
+
+
+void NeuronNetworkSettingsDialog::set_activation_function(ActivationFunction code) {
+    _ui -> _box_activation_function -> setCurrentIndex(code);
 }

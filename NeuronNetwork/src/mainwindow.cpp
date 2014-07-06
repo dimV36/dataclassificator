@@ -33,12 +33,21 @@ MainWindow::~MainWindow() {
 
 
 /**
+ * Создание многослойной нейронной сети
+ * @brief MainWindow::CreateNetwork
+ */
+void MainWindow::CreateNetwork() {
+    _network = new NeuralNetwork(_input, _output, _layout_count, _neurons_in_layout);
+}
+
+
+/**
  * Создать тестовую выборку
  * @brief Classificator::CreateTeachSample
  * @param file_name
  */
 void MainWindow::CreateTeachSample(QString file_name) {
-    _teach_sample.clear();
+    _teach_sample.Clear();
     _class_map.clear();
     QFile file(file_name);
     if (false == file.open(QIODevice::ReadOnly)) {
@@ -81,13 +90,10 @@ void MainWindow::CreateTeachSample(QString file_name) {
                 _class_map.insert(class_name, _class_map.size() + 1);
         }
         /* Создаем пример выборки и храним его в массиве примеров */
-        NeuronExample example(data, _class_map.value(class_name));
-        _teach_sample.push_back(example);
+        _teach_sample.Push(data, ConvertClassToVector(_class_map.value(class_name)));
     }
+    qDebug() << _teach_sample.GetSampleSize();
     file.close();
-    /* Создаём объект персептрона: количество нейронов - количество классов, 2 - число входов (x,y) */
-//    _perceptron = Perceptron(_class_map.size(), 2);
-//    _perceptron.InitWeights(1);
 }
 
 
@@ -96,10 +102,10 @@ void MainWindow::CreateTeachSample(QString file_name) {
  * @brief Classificator::ShakeExamples
  */
 void MainWindow::ShakeExamples() {
-    for (int i = 0; i < _teach_sample.size(); i++) {
-        NeuronExample temp = _teach_sample[i];
-        _teach_sample[i] = _teach_sample[qrand() % _teach_sample.size()];
-        _teach_sample[qrand() % _teach_sample.size()] = temp;
+    for (int i = 0; i < _teach_sample.GetSampleSize(); i++) {
+        NeuralNetworkExample temp = _teach_sample.GetExample(i);
+        _teach_sample[i] = _teach_sample[qrand() % _teach_sample.GetSampleSize()];
+        _teach_sample[qrand() % _teach_sample.GetSampleSize()] = temp;
     }
 }
 
@@ -160,6 +166,22 @@ void MainWindow::CreateOutputNode() {
     QVector<QGVNode*> last_layer = GetLayout(_layout_count - 1);
     for (int i = 0; i < last_layer.size(); i++)
         _scene -> addEdge(last_layer[i], output);
+}
+
+
+/**
+ * Функция преобразовывает номер класса в идентичный в вектороной форме
+ * @brief MainWindow::ConvertClassToVector
+ * @param class_number - номер класса
+ * @return преобразованный вектор
+ */
+QVector<int> MainWindow::ConvertClassToVector(int class_number) {
+    QVector<int> result = QVector<int>(_output);
+    for (int i = 0; i < result.size(); i++) {
+        if (i == class_number - 1)
+            result[i] = 1;
+    }
+    return result;
 }
 
 
@@ -253,13 +275,16 @@ void MainWindow::on__action_network_settings_triggered() {
     dialog.set_output(_output);
     dialog.set_layout_count(_layout_count);
     dialog.set_neurons_in_layout(_neurons_in_layout);
+    dialog.set_activation_function(_function);
     if (dialog.exec() == QDialog::Accepted) {
         _input = dialog.get_input();
         _output = dialog.get_output();
         _layout_count = dialog.get_layout_count();
         _neurons_in_layout = dialog.get_neurons_in_layout();
+        _function = dialog.get_activation_function();
         emit SignalNetworkSettingsChanged();
         _ui -> _action_open_sample -> setEnabled(true);
     }
+    CreateNetwork();
 }
 

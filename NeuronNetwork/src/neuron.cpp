@@ -27,24 +27,24 @@ Neuron::Neuron(QVector<Neuron*> &neurons_link_to, NetworkFunction *function) {
     for (int i = 0; i < neurons_link_to.size(); i++) {
         NeuralLink *link = new NeuralLink (neurons_link_to[i], 0.0 );
         _links_to_neurons.push_back(link);
-        neurons_link_to[i] -> SetInputLink(link);
+        neurons_link_to[i] -> set_input_link(link);
 	}
 
 }
 
 
-Neuron<T>::~Neuron() {
+Neuron::~Neuron() {
 
 }
 
 
-QVector<NeuralLink*>& Neuron::get_links_to_neurons() const {
+QVector<NeuralLink*> Neuron::get_links_to_neurons() const {
     return _links_to_neurons;
 }
 
 
 NeuralLink* Neuron::at(const int index_of_neural_link) {
-    _links_to_neurons.at(index_of_neural_link);
+    return _links_to_neurons.at(index_of_neural_link);
 }
 
 
@@ -110,7 +110,7 @@ void Neuron::set_input_link(NeuralLink *link) {
 }
 
 
-QVector<NeuralLink*> Neuron::get_inputlinks() const {
+QVector<NeuralLink*> Neuron::get_input_links() const {
     return _input_links;
 }
 
@@ -147,8 +147,8 @@ OutputLayerNeuron::~OutputLayerNeuron() {
 }
 
 
-QVector<NeuralLink*>& OutputLayerNeuron::get_input_links() const {
-    return _neuron -> get_links_to_neurons();
+QVector<NeuralLink*> OutputLayerNeuron::get_input_links() const {
+    return _neuron -> get_input_links();
 }
 
 
@@ -165,6 +165,12 @@ void OutputLayerNeuron::set_link_to_neuron(NeuralLink *link) {
 double OutputLayerNeuron::get_sum_of_charges() const {
     return _neuron -> get_sum_of_charges();
 }
+
+
+QVector<NeuralLink*> OutputLayerNeuron::get_links_to_neurons() const {
+    return _neuron -> get_links_to_neurons();
+}
+
 
 
 void OutputLayerNeuron::ResetSumOfCharges() {
@@ -209,11 +215,6 @@ void OutputLayerNeuron::set_input_link(NeuralLink *link) {
 }
 
 
-QVector<NeuralLink*>& OutputLayerNeuron::get_input_links() const {
-    return _neuron -> get_input_links();
-}
-
-
 double OutputLayerNeuron::PerformTrainingProcess(double target) {
     double result;
     double error_in_formation_term = (target - _output_charge) * _neuron -> Derivative();
@@ -255,7 +256,7 @@ HiddenLayerNeuron::~HiddenLayerNeuron() {
 }
 
 
-QVector<NeuralLink*>& HiddenLayerNeuron::get_input_links() const {
+QVector<NeuralLink*> HiddenLayerNeuron::get_input_links() const {
     return _neuron -> get_links_to_neurons();
 }
 
@@ -272,6 +273,11 @@ void HiddenLayerNeuron::set_link_to_neuron(NeuralLink *link) {
 
 double HiddenLayerNeuron::get_sum_of_charges() const {
     return _neuron -> get_sum_of_charges();
+}
+
+
+QVector<NeuralLink*> HiddenLayerNeuron::get_links_to_neurons() const {
+    return _neuron -> get_links_to_neurons();
 }
 
 
@@ -327,12 +333,7 @@ void HiddenLayerNeuron::set_input_link(NeuralLink *link) {
 }
 
 
-QVector<NeuralLink*>& HiddenLayerNeuron::get_input_links() const {
-    return _neuron -> get_input_links();
-}
-
-
-double HiddenLayerNeuron::PerformTrainingProcess(double target) {
+double HiddenLayerNeuron::PerformTrainingProcess(double /*target*/) {
     double delta_inputs = 0.0;
     for (int i = 0; i < this -> get_number_of_links(); i++) {
         NeuralLink *output_link = this -> get_links_to_neurons().at(i);

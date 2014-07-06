@@ -1,52 +1,46 @@
-/*
- * trainAlgorithm.h
- *
- *  Created on: Sep 24, 2013
- *      Author: cheryuri
- */
-
 #ifndef TRAINALGORITHM_H_
 #define TRAINALGORITHM_H_
 
-#include <vector>
+#include <QVector>
+#include <QDebug>
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#include "neuralnetwork.h"
 
-template <typename T>
 class NeuralNetwork;
 
-template <typename T>
-class TrainAlgorithm
-{
-public:
-	virtual 			~TrainAlgorithm(){};
-	virtual double 			Train(const std::vector<T>& inData, const std::vector<T>& inTarget) = 0;
-	virtual void			WeightsInitialization() = 0;
+class TrainAlgorithm {
 protected:
+public:
+    virtual ~TrainAlgorithm();
+    virtual double Train(const QVector<double> &data, const QVector<int> &target) = 0;
+    virtual void WeightsInitialization() = 0;
 };
 
-template <typename T>
-class Hebb : public TrainAlgorithm<T>
-{
-public:
-					Hebb(NeuralNetwork<T> * inNeuralNetwork) : mNeuralNetwork(inNeuralNetwork){};
-	virtual				~Hebb(){};
-	virtual double 			Train(const std::vector<T>& inData, const std::vector<T>& inTarget);
-	virtual void			WeightsInitialization();
+
+class Hebb : public TrainAlgorithm {
 protected:
-	NeuralNetwork<T> * 		mNeuralNetwork;
+    NeuralNetwork *_neural_network;
+public:
+    Hebb(NeuralNetwork *neural_network);
+    virtual ~Hebb();
+    virtual double Train(const QVector<double> &data, const QVector<int> &target);
+    virtual void WeightsInitialization();
 };
 
-template <typename T>
-class Backpropagation : public TrainAlgorithm<T>
-{
-public:
-					Backpropagation(NeuralNetwork<T> * inNeuralNetwork);
-	virtual				~Backpropagation(){};
-	virtual double 			Train(const std::vector<T>& inData, const std::vector<T>& inTarget);
-	virtual void			WeightsInitialization();
+
+class Backpropagation : public TrainAlgorithm {
 protected:
-	void				NguyenWidrowWeightsInitialization();
-	void				CommonInitialization();
-	NeuralNetwork<T> * 		mNeuralNetwork;
+    NeuralNetwork *_neural_network;
+public:
+    Backpropagation(NeuralNetwork *neural_network);
+    virtual ~Backpropagation();
+    virtual double Train(const QVector<double> &data, const QVector<int> &target);
+    virtual void WeightsInitialization();
+protected:
+    void NguyenWidrowWeightsInitialization();
+    void CommonInitialization();
 };
 
 

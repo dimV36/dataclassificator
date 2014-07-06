@@ -1,70 +1,71 @@
 #include "neuralnetwork.h"
 
-template <typename T>
-NeuralNetwork<T>::NeuralNetwork( const int& inInputs, const int& inOutputs, const int& inNumOfHiddenLayers, const int& inNumOfNeuronsInHiddenLayers, const char * inTypeOfNeuralNetwork )
-{
+
+NeuralNetwork::NeuralNetwork(int inputs, int outputs, int number_of_hidden_layers, int number_of_neurons_in_hidden_layers, ActivationFunction function) {
 	/*
 	 * 		Protection against the fools.
 	 * 		The neural net needs at least 1 input neuron and 1 output.
 	*/
 
-	if(inInputs > 0 && inOutputs > 0){
-
-		mMinMSE			  = 0.01;
-		mMeanSquaredError = 0;
-		mInputs 		  =	inInputs;
-		mOutputs 		  = inOutputs;
-		mHidden 		  = inNumOfNeuronsInHiddenLayers;
+    if (inputs > 0 && outputs > 0) {
+        _min_mean_squared_error = 0.01;
+        _mean_squared_error = 0;
+        _inputs 		  =	inputs;
+        _outputs 		  = outputs;
+        _hidden 		  = number_of_neurons_in_hidden_layers;
 
 		/*
 		 *		Network function's declarations for input and output neurons.
 		*/
+        NetworkFunction *input_neurons_function = new Linear();
+        NetworkFunction *output_neurons_function;
 
-		NetworkFunction * OutputNeuronsFunc;
-		NetworkFunction * InputNeuronsFunc;
+        switch(function) {
+            case LinearFunction: {
+                output_neurons_function = new Linear();
+                break;
+            }
+            case SigmoidFunction: {
+                output_neurons_function = new Sigmoid();
+                break;
+            }
+            case BipolarSigmoidFunction: {
+                output_neurons_function = new BipolarSigmoid();
+                break;
+            }
+        }
 
 		/*
 		 *		At least two layers require - input and output;
 		*/
 
-		std::vector<Neuron<T > *> outputLayer;
-		std::vector<Neuron<T > *> inputLayer;
+        QVector<Neuron*> output_layer;
+        QVector<Neuron*> input_layer;
 
-		/*
-		 *		This block of strcmps decides what training algorithm and neuron factory we should use as well as what
-		 *		network function every node will have.
-		*/
-
-		if( strcmp( inTypeOfNeuralNetwork, "MultiLayerPerceptron" ) == 0){
-			mNeuronFactory = new PerceptronNeuronFactory<T>;
-			mTrainingAlgoritm = new Backpropagation<T>(this);
-
-			OutputNeuronsFunc = new BipolarSigmoid;
-			InputNeuronsFunc = new Linear;
-
-		}
+        _neuron_factory = new PerceptronNeuronFactory();
+        _training_algorithm = new Backpropagation(this);
 
 		/*
 		 * 		Output layers creation
 		*/
 
-		for(int iNumOfOutputs = 0; iNumOfOutputs < inOutputs; iNumOfOutputs++){
-			outputLayer.push_back( mNeuronFactory->CreateOutputNeuron(OutputNeuronsFunc) );
+        for (int i = 0; i < outputs; i++) {
+            output_layer.push_back(_neuron_factory -> CreateOutputNeuron(output_neurons_function));
 		}
-		mLayers.push_back(outputLayer);
+        _layers.push_back(output_layer);
 
 		/*
 		 * 		Hidden layers creation
 		*/
 
-		for(int i = 0; i < inNumOfHiddenLayers; i++){
-			std::vector<Neuron<T > *> HiddenLayer;
-			for(int j = 0; j < inNumOfNeuronsInHiddenLayers; j++ ){
-				Neuron<T> * hidden = mNeuronFactory->CreateHiddenNeuron(mLayers[0], OutputNeuronsFunc);
-				HiddenLayer.push_back(hidden);
+        for (int i = 0; i < number_of_hidden_layers; i++) {
+            QVector<Neuron*> hidden_layer;
+            for (int j = 0; j < number_of_neurons_in_hidden_layers; j++ ) {
+                Neuron *hidden = _neuron_factory -> CreateHiddenNeuron(_layers[0], output_neurons_function);
+                hidden_layer.push_back(hidden);
 			}
-			mBiasLayer.insert(mBiasLayer.begin(),mNeuronFactory->CreateInputNeuron(mLayers[0], InputNeuronsFunc));
-			mLayers.insert(mLayers.begin(),HiddenLayer);
+            _bias_layer.insert(_bias_layer.begin(), _neuron_factory -> CreateInputNeuron(_layers[0], input_neurons_function));
+            _layers.insert(_layers.begin(), hidden_layer);
 
 		}
 
@@ -72,148 +73,190 @@ NeuralNetwork<T>::NeuralNetwork( const int& inInputs, const int& inOutputs, cons
 		 *		Input layers creation
 		*/
 
-		for(int iNumOfInputs = 0; iNumOfInputs < inInputs; iNumOfInputs++){
-			inputLayer.push_back(mNeuronFactory->CreateInputNeuron(mLayers[0], InputNeuronsFunc));
+        for (int i = 0; i < inputs; i++) {
+            input_layer.push_back(_neuron_factory -> CreateInputNeuron(_layers[0], input_neurons_function));
 		}
-		mBiasLayer.insert(mBiasLayer.begin(),mNeuronFactory->CreateInputNeuron(mLayers[0],InputNeuronsFunc));
-		mLayers.insert(mLayers.begin(),inputLayer);
-
-		mTrainingAlgoritm->WeightsInitialization();
-	}
-	else{
-		std::cout << "Error in Neural Network constructor: The number of input and output neurons has to be more than 0!\n";
+        _bias_layer.insert(_bias_layer.begin(), _neuron_factory -> CreateInputNeuron(_layers[0], input_neurons_function));
+        _layers.insert(_layers.begin(), input_layer);
+        _training_algorithm -> WeightsInitialization();
+    } else {
+        qDebug() << "Error in Neural Network constructor: The number of input and output neurons has to be more than 0!\n";
 	}
 }
 
-template <typename T>
-NeuralNetwork<T>::~NeuralNetwork()
-{
-	delete mNeuronFactory;
-	delete mTrainingAlgoritm;
 
-	for( unsigned int uNumOfBiases = 0; uNumOfBiases < mBiasLayer.size(); uNumOfBiases++ ){
-		delete mBiasLayer[ uNumOfBiases ];
+NeuralNetwork::~NeuralNetwork() {
+    delete _neuron_factory;
+    delete _training_algorithm;
+
+    for (int i = 0; i < _bias_layer.size(); i++) {
+        delete _bias_layer[i];
 	}
 
-	for( unsigned int uNumOfLayers = 0; uNumOfLayers < mLayers.size(); uNumOfLayers++){
-		for( unsigned int uNumOfNeurons = 0; uNumOfNeurons < mLayers[uNumOfLayers].size(); uNumOfNeurons++ ){
-			delete mLayers[ uNumOfLayers ].at( uNumOfNeurons );
+    for (int i = 0; i < _layers.size(); i++) {
+        for (int j = 0; j < _layers[i].size(); j++) {
+            delete _layers[i].at(j);
 		}
 	}
-
 }
 
-template <typename T>
-bool NeuralNetwork<T>::Train( const std::vector<std::vector<T > >& inData, const std::vector<std::vector<T > >& inTarget )
-{
-	bool trues = true;
-	int iIteration = 0;
-	while(trues){
-		iIteration++;
-		for(int i = 0; i < inData.size(); i++){
-			mTrainingAlgoritm->Train( inData[i], inTarget[i] );
-		}
-		double MSE = this->GetMSE();
-		if( MSE < mMinMSE){
-			std::cout << "At " << iIteration << " iteration MSE: " << MSE << " was achieved\n";
-			trues = false;
-		}
-		this->ResetMSE();
-	}
-	//return mTrainingAlgoritm->Train( inData,inTarget);
-	return trues;
+
+void NeuralNetwork::set_algorithm(TrainAlgorithm *algorithm) {
+    _training_algorithm = algorithm;
 }
 
-template <typename T>
-std::vector<int> NeuralNetwork<T>::GetNetResponse( const std::vector<T>& inData )
-{
-	std::vector<int> netResponse;
-	if(inData.size() != mInputs){
-		std::cout << "Input data dimensions are wrong, expected: " << mInputs << " elements\n";
-		return netResponse;
-	}
-	else{
-		for(unsigned int indexOfData = 0; indexOfData < this->GetInputLayer().size(); indexOfData++){
-			this->GetInputLayer().at(indexOfData)->Input(inData[indexOfData]);
+
+void NeuralNetwork::set_neuron_factory(NeuronFactory *factory) {
+    _neuron_factory = factory;
+}
+
+
+void NeuralNetwork::set_min_mean_squared_error(double error) {
+    _min_mean_squared_error = error;
+}
+
+
+int NeuralNetwork::get_inputs() const {
+    return _inputs;
+}
+
+
+int NeuralNetwork::get_outputs() const {
+    return _outputs;
+}
+
+
+QVector<QVector<Neuron*> > NeuralNetwork::get_layers() const {
+    return _layers;
+}
+
+
+double NeuralNetwork::get_min_mean_squared_error() const {
+    return _min_mean_squared_error;
+}
+
+
+bool NeuralNetwork::Train(QVector<QVector<double> > &data, QVector<QVector<int> > &target ) {
+    bool success = true;
+    int iteration = 0;
+    while(success) {
+        iteration++;
+        for (int i = 0; i < data.size(); i++) {
+            _training_algorithm -> Train(data[i], target[i]);
 		}
+        double mse = get_min_mean_squared_error();
+        if (mse < _min_mean_squared_error) {
+            qDebug() << "At " << iteration << " iteration MSE: " << mse << " was achieved\n";
+            success = false;
+		}
+        ResetMSE();
+	}
+    return success;
+}
 
-		for(unsigned int numOfLayers = 0; numOfLayers < mLayers.size() - 1; numOfLayers++){
-			mBiasLayer[numOfLayers]->Input(1.0);
 
-			for(unsigned int indexOfData = 0; indexOfData < mLayers.at(numOfLayers).size(); indexOfData++){
-				mLayers.at(numOfLayers).at(indexOfData)->Fire();
+QVector<int> NeuralNetwork::NetResponse(QVector<double> &data) {
+    QVector<int> response;
+    if (data.size() != _inputs) {
+        qDebug() << "Input data dimensions are wrong, expected: " << _inputs << " elements\n";
+        return response;
+    } else {
+        for (int i = 0; i < GetInputLayer().size(); i++) {
+            GetInputLayer().at(i) -> Input(data[i]);
+		}
+        for (int layers = 0; layers < _layers.size() - 1; layers++) {
+            _bias_layer[layers] -> Input(1.0);
+
+            for (int index = 0; index < _layers.at(layers).size(); index++) {
+                _layers.at(layers).at(index) -> Fire();
 			}
-
-			mBiasLayer[numOfLayers]->Fire();
+            _bias_layer[layers] -> Fire();
 		}
 
-		std::cout << "Net response is: { ";
-		for(unsigned int indexOfOutputElements = 0; indexOfOutputElements < mOutputs; indexOfOutputElements++){
-
-			/*
-			 * 		For every neuron in output layer, make it fire its sum of charges;
-			 */
-
-			double res = this->GetOutputLayer().at(indexOfOutputElements)->Fire();
-
-			std::cout << "res: " << res << std::endl;
-
-
+        qDebug() << "Net response is: { ";
+        for (int outputs = 0; outputs < _outputs; outputs++) {
+            double result = GetOutputLayer().at(outputs) -> Fire();
+            qDebug() << "res: " << result << endl;
 		}
-		std::cout << " } \n";
-		this->ResetCharges();
-		return netResponse;
+        qDebug() << " } \n";
+        ResetCharges();
+        return response;
 
 	}
-
-
-
 }
 
-template <typename T>
-void NeuralNetwork<T>::ResetCharges()
-{
-	for(unsigned int i = 0; i < mLayers.size(); i++ ){
-		for(unsigned int indexOfOutputElements = 0; indexOfOutputElements < mLayers.at(i).size(); indexOfOutputElements++){
-			mLayers.at(i).at(indexOfOutputElements)->ResetSumOfCharges();
 
-
+void NeuralNetwork::ResetCharges() {
+    for (int i = 0; i < _layers.size(); i++) {
+        for (int output = 0; output < _layers.at(i).size(); output++) {
+            _layers.at(i).at(output) -> ResetSumOfCharges();
 		}
-		//mBiasLayer[i]->ResetSumOfCharges();
 	}
-	for(unsigned int i = 0; i < mLayers.size()-1; i++ ){
-			mBiasLayer[i]->ResetSumOfCharges();
+    for (int i = 0; i < _layers.size() - 1; i++) {
+            _bias_layer[i] -> ResetSumOfCharges();
 	}
-
 }
 
-template <typename T>
-void NeuralNetwork<T>::UpdateWeights()
-{
-	for(unsigned int indOfLayer = 0; indOfLayer < mLayers.size(); indOfLayer++){
-		for(unsigned int indOfNeuron = 0; indOfNeuron < mLayers[indOfLayer].size(); indOfNeuron++){
-			mLayers[indOfLayer].at(indOfNeuron)->PerformWeightsUpdating();
+
+void NeuralNetwork::UpdateWeights() {
+    for (int layer = 0; layer < _layers.size(); layer++) {
+        for (int neuron = 0; neuron < _layers[layer].size(); neuron++) {
+            _layers[layer].at(neuron) -> PerformWeightsUpdating();
 		}
 	}
 }
 
-template <typename T>
-void NeuralNetwork<T>::ShowNetworkState()
-{
-	std::cout << std::endl;
-	for(unsigned int indOfLayer = 0; indOfLayer < mLayers.size(); indOfLayer++){
-		std::cout << "Layer index: " << indOfLayer << std::endl;
-		for(unsigned int indOfNeuron = 0; indOfNeuron < mLayers[indOfLayer].size(); indOfNeuron++){
-			std::cout << "  Neuron index: " << indOfNeuron << std::endl;
-			mLayers[indOfLayer].at(indOfNeuron)->ShowNeuronState();
+
+void NeuralNetwork::ShowNetworkState() {
+    for (int layer = 0; layer < _layers.size(); layer++) {
+        qDebug() << "Layer index: " << layer << endl;
+        for (int neuron = 0; neuron < _layers[layer].size(); neuron++) {
+            qDebug() << "  Neuron index: " << neuron << endl;
+            _layers[layer].at(neuron) -> ShowNeuronState();
 		}
-		if(indOfLayer < mBiasLayer.size()){
-			std::cout << "  Bias: " << std::endl;
-			mBiasLayer[indOfLayer]->ShowNeuronState();
+        if (layer < _bias_layer.size()) {
+            qDebug() << "  Bias: " << endl;
+            _bias_layer[layer] -> ShowNeuronState();
 		}
 	}
 }
 
-template class NeuralNetwork<double>;
-template class NeuralNetwork<float>;
-template class NeuralNetwork<int>;
+
+QVector<Neuron*> NeuralNetwork::GetLayer(int index) const {
+    return _layers[index];
+}
+
+
+int NeuralNetwork::size() const {
+    return _layers.size();
+}
+
+
+QVector<Neuron*> NeuralNetwork::GetOutputLayer() const {
+    return _layers[_layers.size() - 1];
+}
+
+
+QVector<Neuron*> NeuralNetwork::GetInputLayer() const {
+    return _layers[0];
+}
+
+
+QVector<Neuron*> NeuralNetwork::GetBiasLayer() const {
+    return _bias_layer;
+}
+
+
+void NeuralNetwork::AddMSE(double value) {
+    _mean_squared_error += value;
+}
+
+
+double NeuralNetwork::get_mean_squared_error() const {
+    return _mean_squared_error;
+}
+
+
+void NeuralNetwork::ResetMSE() {
+    _mean_squared_error = 0.0;
+}

@@ -3,6 +3,8 @@
 
 #include <QtMath>
 
+enum ActivationFunction {LinearFunction, SigmoidFunction, BipolarSigmoidFunction};
+
 /* Базовый класс для всех функций активации */
 class NetworkFunction {
 public:
