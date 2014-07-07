@@ -27,7 +27,8 @@ SOURCES += main.cpp\
     neuron.cpp \
     neuronfactory.cpp \
     trainalgorithm.cpp \
-    neuralsample.cpp
+    neuralsample.cpp \
+    node.cpp
 
 HEADERS  += mainwindow.h \
     graphicsview.h \
@@ -39,7 +40,8 @@ HEADERS  += mainwindow.h \
     neuron.h \
     neuronfactory.h \
     trainalgorithm.h \
-    neuralsample.h
+    neuralsample.h \
+    node.h
 
 FORMS    += mainwindow.ui \
     neuronnetworksettingsdialog.ui \

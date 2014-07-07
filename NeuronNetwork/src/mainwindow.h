@@ -14,6 +14,7 @@
 #include "neuralsample.h"
 #include "tablecolumnchooser.h"
 #include "neuralnetwork.h"
+#include "node.h"
 
 namespace Ui {
 class MainWindow;
@@ -31,12 +32,8 @@ private:
     void CreateTeachSample(QString file_name);
     void CreateNetwork();
     void ShakeExamples();
-    QVector<QGVNode*> GetLayout(int index) const;
-    void AddEdges(QGVNode *node, int layout);
-    void CreateInputNode();
-    void CreateOutputNode();
-
-    void CreateLinksBetweenInputAndHiddenLayouts(QStringList labels = QStringList());
+    QVector<Node *> GetLayout(int index) const;
+    void AddEdges(Node *node, int layout);
 
     QVector<int> ConvertClassToVector(int class_number);
     void UpdateLinksOnGraph();
@@ -57,18 +54,18 @@ private:
     /* Сцена, на которой отрисовывается визуальное представление сети */
     QGVScene *_scene;
     /* Сами узлы сети */
-    QVector<QVector<QGVNode*> > _nodes;
-    QVector<QGVNode*> _input_layer;
-    QVector<QGVNode*> _output_layer;
+    QVector<QVector<Node*> > _hidden_layer;
+    QVector<Node*> _input_layer;
+    QVector<Node*> _output_layer;
 
     /* Параметры сети, которые пользователь вводит */
-    int _input;                   // Количество входов
-    int _output;                  // Количество выходов
-    int _layout_count;            // Количество слоёв
-    int _neurons_in_layout;       // Количество нейронов в слое
-    ActivationFunction _function; // Значение активационной функции в слоях
+    int _inputs;                   // Количество входов
+    int _outputs;                  // Количество выходов
+    int _hidden_layer_size;        // Количество слоёв
+    int _neurons_in_hidden_layer;  // Количество нейронов в слое
+    ActivationFunction _function;  // Значение активационной функции в слоях
 
-    QList<int> _choosen_column;   // Список со значениями выбранных столбцов
+    QList<int> _choosen_column;    // Список со значениями выбранных столбцов
 
     NeuralSample _teach_sample;                 // Выборка обучающих примеров
     NeuralNetwork *_network;                    // Нейронная сеть

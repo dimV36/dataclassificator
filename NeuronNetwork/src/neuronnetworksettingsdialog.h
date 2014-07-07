@@ -18,16 +18,16 @@ public:
     explicit NeuronNetworkSettingsDialog(QWidget *parent = 0);
     ~NeuronNetworkSettingsDialog();
 
-    int get_input() const;
-    int get_output() const;
-    int get_layout_count() const;
-    int get_neurons_in_layout() const;
+    int get_inputs() const;
+    int get_outputs() const;
+    int get_hidden_layer_size() const;
+    int get_neurons_in_hidden_layer() const;
     ActivationFunction get_activation_function() const;
 
-    void set_input(const int value);
-    void set_output(const int value);
-    void set_layout_count(const int value);
-    void set_neurons_in_layout(const int value);
+    void set_inputs(const int value);
+    void set_outputs(const int value);
+    void set_hidden_layer_size(const int value);
+    void set_neurons_in_hidden_layer(const int value);
     void set_activation_function(ActivationFunction code);
 private:
     Ui::NeuronNetworkSettingsDialog *_ui;

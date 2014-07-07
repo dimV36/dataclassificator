@@ -20,7 +20,7 @@ MainWindow::MainWindow(QWidget *parent) :
     _scene = new QGVScene(QString());
     _ui -> _view -> setScene(_scene);
 
-    _input = _output = _layout_count = _neurons_in_layout = 1;
+    _inputs = _outputs = _hidden_layer_size = _neurons_in_hidden_layer = 1;
     _function = LinearFunction;
 }
 
@@ -38,7 +38,7 @@ MainWindow::~MainWindow() {
  * @brief MainWindow::CreateNetwork
  */
 void MainWindow::CreateNetwork() {
-    _network = new NeuralNetwork(_input, _output, _layout_count, _neurons_in_layout);
+    _network = new NeuralNetwork(_inputs, _outputs, _hidden_layer_size, _neurons_in_hidden_layer);
 }
 
 
@@ -66,7 +66,7 @@ void MainWindow::CreateTeachSample(QString file_name) {
     QStringList choosen_data; // В переменной будет храниться столбцы, выбранные пользователем */
     TableColumnChooser chooser;
     chooser.set_headers(headers);
-    chooser.set_input(_input);
+    chooser.set_input(_inputs);
     if (chooser.exec() == QDialog::Accepted) {
         choosen_data = chooser.get_headers();   // Если пользователь нажал ОК, то получаем выбранные столбцы
     } else
@@ -116,56 +116,24 @@ void MainWindow::ShakeExamples() {
  * @param index - номер слоя
  * @return
  */
-QVector<QGVNode*> MainWindow::GetLayout(int index) const {
-    QVector<QGVNode*> result;
-    for (int i = 0; i < _neurons_in_layout; i++)
-        result.push_back(_nodes[index][i]);
+QVector<Node*> MainWindow::GetLayout(int index) const {
+    QVector<Node*> result;
+    for (int i = 0; i < _neurons_in_hidden_layer; i++)
+        result.push_back(_hidden_layer[index][i]);
     return result;
 }
 
 
 /**
- * Функция строит рёбра между переданным и нейронами в слое
+ * Функция строит рёбра между переданным и скрытыми нейронами
  * @brief MainWindow::AddEdges
  * @param node - нейрон
  * @param layout - слой
  */
-void MainWindow::AddEdges(QGVNode *node, int layout) {
-    QVector<QGVNode*> next_layout = GetLayout(layout + 1);
+void MainWindow::AddEdges(Node *node, int layout) {
+    QVector<Node*> next_layout = GetLayout(layout + 1);
     for (int i = 0; i < next_layout.size(); i++)
-        _scene -> addEdge(node, next_layout[i]);
-}
-
-
-/**
- * Создаёт на сцене визуальное представление входного вектора по количеству входов
- * @brief MainWindow::CreateInputNode
- */
-void MainWindow::CreateInputNode() {
-    QString input_label;
-    for (int i = 0; i < _input; i++)
-        input_label += "x" + QString::number(i + 1) + "\n";
-    input_label.chop(1);
-    QGVNode *input = _scene -> addNode(input_label);
-    input -> setAttribute("shape", "box");
-    AddEdges(input, -1);
-}
-
-
-/**
- * Создаёт на сцене визуальное представление выходного вектора по количеству выходов
- * @brief MainWindow::CreateOutputNode
- */
-void MainWindow::CreateOutputNode() {
-    QString output_label;
-    for (int i = 0; i < _output; i++)
-        output_label += "y" + QString::number(i + 1) + "\n";
-    output_label.chop(1);
-    QGVNode *output = _scene -> addNode(output_label);
-    output -> setAttribute("shape", "box");
-    QVector<QGVNode*> last_layer = GetLayout(_layout_count - 1);
-    for (int i = 0; i < last_layer.size(); i++)
-        _scene -> addEdge(last_layer[i], output);
+        node -> AddEdge(next_layout[i], "0");
 }
 
 
@@ -176,35 +144,13 @@ void MainWindow::CreateOutputNode() {
  * @return преобразованный вектор
  */
 QVector<int> MainWindow::ConvertClassToVector(int class_number) {
-    QVector<int> result = QVector<int>(_output);
+    QVector<int> result = QVector<int>(_outputs);
     for (int i = 0; i < result.size(); i++) {
         if (i == class_number - 1)
             result[i] = 1;
     }
     return result;
 }
-
-
-/**
- * Создание связей между входным и скрытым слоями
- * @brief MainWindow::CreateLinksBetweenInputAndHiddenLayouts
- * @param label
- */
-void MainWindow::CreateLinksBetweenInputAndHiddenLayouts(QStringList labels) {
-    bool is_empty = labels.isEmpty();
-    for (int i = 0; i < _input; i++) {
-        QVector<QGVNode *> hidden_layer = GetLayout(0);
-        QGVNode *input = _input_layer[i];
-        for (int j = 0; j < hidden_layer.size(); j++) {
-            if (true == is_empty)
-                _scene -> addEdge(input, hidden_layer[j], QString());
-            else {
-                _scene -> addEdge(input, hidden_layer[j], labels[i]);
-            }
-        }
-    }
-}
-
 
 
 /**
@@ -215,11 +161,15 @@ void MainWindow::UpdateLinksOnGraph() {
     QVector<Neuron*> input_layer = _network -> GetInputLayer();
     for (int i = 0; i < input_layer.size(); i++) {
         Neuron *neuron = input_layer[i];
+        Node *node = _input_layer[i];
+        QVector<Node*> hidden = GetLayout(0);
         QVector<NeuralLink*> links = neuron -> get_links_to_neurons();
-        QStringList labels;
-        for (int j = 0; j < links.size(); j++)
-            labels.push_back(QString::number(links[i] -> get_weight()));
-        CreateLinksBetweenInputAndHiddenLayouts(labels);
+        for (int j = 0; j < links.size(); j++) {
+            QString weight = QString::number(links[j] -> get_weight());
+            node -> get_edges()[j] -> setLabel(weight);
+            _scene -> applyLayout();
+            _ui -> _view -> fitInView(_scene -> sceneRect(), Qt::KeepAspectRatio);
+        }
     }
 }
 
@@ -231,7 +181,7 @@ void MainWindow::UpdateLinksOnGraph() {
 void MainWindow::SlotDrawGraph() {
     _scene -> clear();
     _input_layer.clear();
-    _nodes.clear();
+    _hidden_layer.clear();
     _output_layer.clear();
 
     /* Установка основных параметров всей сети */
@@ -246,51 +196,57 @@ void MainWindow::SlotDrawGraph() {
 
     /* Создание и добавление на сцену нейронов входного слоя */
     int number = 1;
-    for (int i = 0; i < _input; i++) {
-        QGVNode *input_node = _scene -> addNode(QString::number(number));
+    for (int i = 0; i < _inputs; i++) {
+        Node *input_node = new Node(_scene, QString::number(number));
         _input_layer.push_back(input_node);
         number++;
-        input_node -> setAttribute("fillcolor", "red");
+        input_node -> get_node() -> setAttribute("fillcolor", "red");
     }
 
     /* Создание и добавление нейронов скрытого слоя на сцену */
     number = 1;
-    for (int i = 0; i < _layout_count; i++) {
-        QVector<QGVNode *> layer;
-        for (int j = 0; j < _neurons_in_layout; j++) {
-            QGVNode *node = _scene -> addNode(QString::number(number));
+    for (int i = 0; i < _hidden_layer_size; i++) {
+        QVector<Node *> layer;
+        for (int j = 0; j < _neurons_in_hidden_layer; j++) {
+            Node *node = new Node(_scene, QString::number(number));
             layer.push_back(node);
             number++;
         }
-        _nodes.push_back(layer);
+        _hidden_layer.push_back(layer);
     }
 
     /* Создание и добавление на сцену нейронов выходного слоя */
     number = 1;
-    for (int i = 0; i < _output; i++) {
-        QGVNode *input_node = _scene -> addNode(QString::number(number));
+    for (int i = 0; i < _outputs; i++) {
+        Node *input_node = new Node(_scene ,QString::number(number));
         _output_layer.push_back(input_node);
         number++;
-        input_node -> setAttribute("fillcolor", "blue");
+        input_node -> get_node() -> setAttribute("fillcolor", "blue");
     }
 
     /* Создаются связи между входным слоем и скрытым */
-    CreateLinksBetweenInputAndHiddenLayouts();
+    for (int i = 0; i < _inputs; i++) {
+        QVector<Node *> hidden_layer = GetLayout(0);
+        Node *input = _input_layer[i];
+        for (int j = 0; j < hidden_layer.size(); j++) {
+            input -> AddEdge(hidden_layer[j], "0");
+        }
+    }
 
     /* Создаются связи между элементами скрытого слоя */
-    for (int i = 0; i < _layout_count; i++)
-        for (int j = 0; j < _neurons_in_layout; j++) {
-        QGVNode *node = _nodes[i][j];
-        if (i + 1 != _layout_count)
+    for (int i = 0; i < _hidden_layer_size; i++)
+        for (int j = 0; j < _neurons_in_hidden_layer; j++) {
+        Node *node = _hidden_layer[i][j];
+        if (i + 1 != _hidden_layer_size)
             AddEdges(node, i);
     }
 
     /* Создаются связи между скрытым слоем и выходящим */
-    for (int i = 0; i < _output; i++) {
-        QVector<QGVNode *> hidden_layer = GetLayout(_layout_count - 1);
-        QGVNode *output = _output_layer[i];
+    for (int i = 0; i < _outputs; i++) {
+        QVector<Node*> hidden_layer = GetLayout(_hidden_layer_size - 1);
+        Node *output = _output_layer[i];
         for (int j = 0; j < hidden_layer.size(); j++)
-            _scene -> addEdge(hidden_layer[j], output);
+            hidden_layer[j] -> AddEdge(output, "0");
     }
 
     _scene -> applyLayout();
@@ -334,7 +290,7 @@ void MainWindow::on__action_teach_triggered() {
  * @brief MainWindow::on__action_classificate_triggered
  */
 void MainWindow::on__action_classificate_triggered() {
-
+    _input_layer[0] -> get_node() -> setLabel("2");
 }
 
 
@@ -344,16 +300,16 @@ void MainWindow::on__action_classificate_triggered() {
  */
 void MainWindow::on__action_network_settings_triggered() {
     NeuronNetworkSettingsDialog dialog;
-    dialog.set_input(_input);
-    dialog.set_output(_output);
-    dialog.set_layout_count(_layout_count);
-    dialog.set_neurons_in_layout(_neurons_in_layout);
+    dialog.set_inputs(_inputs);
+    dialog.set_outputs(_outputs);
+    dialog.set_hidden_layer_size(_hidden_layer_size);
+    dialog.set_neurons_in_hidden_layer(_neurons_in_hidden_layer);
     dialog.set_activation_function(_function);
     if (dialog.exec() == QDialog::Accepted) {
-        _input = dialog.get_input();
-        _output = dialog.get_output();
-        _layout_count = dialog.get_layout_count();
-        _neurons_in_layout = dialog.get_neurons_in_layout();
+        _inputs = dialog.get_inputs();
+        _outputs = dialog.get_outputs();
+        _hidden_layer_size = dialog.get_hidden_layer_size();
+        _neurons_in_hidden_layer = dialog.get_neurons_in_hidden_layer();
         _function = dialog.get_activation_function();
         emit SignalNetworkSettingsChanged();
         _ui -> _action_open_sample -> setEnabled(true);

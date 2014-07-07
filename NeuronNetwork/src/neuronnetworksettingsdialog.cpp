@@ -15,22 +15,22 @@ NeuronNetworkSettingsDialog::~NeuronNetworkSettingsDialog() {
 }
 
 
-int NeuronNetworkSettingsDialog::get_input() const {
+int NeuronNetworkSettingsDialog::get_inputs() const {
     return _ui -> _box_input -> value();
 }
 
 
-int NeuronNetworkSettingsDialog::get_output() const {
+int NeuronNetworkSettingsDialog::get_outputs() const {
     return _ui -> _box_output -> value();
 }
 
 
-int NeuronNetworkSettingsDialog::get_layout_count() const {
+int NeuronNetworkSettingsDialog::get_hidden_layer_size() const {
     return _ui -> _box_layout_count -> value();
 }
 
 
-int NeuronNetworkSettingsDialog::get_neurons_in_layout() const {
+int NeuronNetworkSettingsDialog::get_neurons_in_hidden_layer() const {
     return _ui -> _box_neutons_in_layout -> value();
 }
 
@@ -41,22 +41,22 @@ ActivationFunction NeuronNetworkSettingsDialog::get_activation_function() const 
 }
 
 
-void NeuronNetworkSettingsDialog::set_input(const int value) {
+void NeuronNetworkSettingsDialog::set_inputs(const int value) {
     _ui -> _box_input -> setValue(value);
 }
 
 
-void NeuronNetworkSettingsDialog::set_output(const int value) {
+void NeuronNetworkSettingsDialog::set_outputs(const int value) {
     _ui -> _box_output -> setValue(value);
 }
 
 
-void NeuronNetworkSettingsDialog::set_layout_count(const int value) {
+void NeuronNetworkSettingsDialog::set_hidden_layer_size(const int value) {
     _ui -> _box_layout_count -> setValue(value);
 }
 
 
-void NeuronNetworkSettingsDialog::set_neurons_in_layout(const int value) {
+void NeuronNetworkSettingsDialog::set_neurons_in_hidden_layer(const int value) {
     _ui -> _box_neutons_in_layout -> setValue(value);
 }
 
