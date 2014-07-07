@@ -29,7 +29,6 @@ Neuron::Neuron(QVector<Neuron*> &neurons_link_to, NetworkFunction *function) {
         _links_to_neurons.push_back(link);
         neurons_link_to[i] -> set_input_link(link);
 	}
-
 }
 
 

@@ -36,7 +36,10 @@ private:
     void CreateInputNode();
     void CreateOutputNode();
 
+    void CreateLinksBetweenInputAndHiddenLayouts(QStringList labels = QStringList());
+
     QVector<int> ConvertClassToVector(int class_number);
+    void UpdateLinksOnGraph();
 
 signals:
     void SignalNetworkSettingsChanged();
@@ -55,6 +58,8 @@ private:
     QGVScene *_scene;
     /* Сами узлы сети */
     QVector<QVector<QGVNode*> > _nodes;
+    QVector<QGVNode*> _input_layer;
+    QVector<QGVNode*> _output_layer;
 
     /* Параметры сети, которые пользователь вводит */
     int _input;                   // Количество входов
@@ -63,9 +68,9 @@ private:
     int _neurons_in_layout;       // Количество нейронов в слое
     ActivationFunction _function; // Значение активационной функции в слоях
 
-    QList<int> _choosen_column; // Список со значениями выбранных столбцов
+    QList<int> _choosen_column;   // Список со значениями выбранных столбцов
 
-    NeuralSample _teach_sample;       // Выборка обучающих примеров
+    NeuralSample _teach_sample;                 // Выборка обучающих примеров
     NeuralNetwork *_network;                    // Нейронная сеть
     QMap<QString, int> _class_map;              // Карта соответствия имени номеру класса
 };

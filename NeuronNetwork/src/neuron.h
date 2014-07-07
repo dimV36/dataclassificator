@@ -8,7 +8,7 @@
 //#include <iostream>
 
 /* Скорость обучения */
-const double LEARNING_RATE = 0.01;
+const double LEARNING_RATE = 0.1;
 
 
 class Neuron {

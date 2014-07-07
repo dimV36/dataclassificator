@@ -36,16 +36,17 @@ public:
     QVector<QVector<Neuron*> > get_layers() const;
 
     double get_min_mean_squared_error() const;
-    bool Train(QVector<QVector<double> > &data, QVector<QVector<int> > &target);
+    bool Train(QVector<double> &data, QVector<int> &target);
     QVector<int> NetResponse(QVector<double> &data);
     void ShowNetworkState();
 
-protected:
     QVector<Neuron *> GetLayer(int index) const;
     int size() const;
     QVector<Neuron *> GetOutputLayer() const;
     QVector<Neuron *> GetInputLayer() const;
     QVector<Neuron *> GetBiasLayer() const;
+
+protected:
     void UpdateWeights();
     void ResetCharges();
     void AddMSE(double value);

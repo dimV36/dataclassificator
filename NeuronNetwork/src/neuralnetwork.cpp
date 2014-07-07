@@ -136,19 +136,16 @@ double NeuralNetwork::get_min_mean_squared_error() const {
 }
 
 
-bool NeuralNetwork::Train(QVector<QVector<double> > &data, QVector<QVector<int> > &target ) {
+bool NeuralNetwork::Train(QVector<double>  &data, QVector<int> &target) {
     bool success = true;
     int iteration = 0;
     while(success) {
         iteration++;
-        for (int i = 0; i < data.size(); i++) {
-            _training_algorithm -> Train(data[i], target[i]);
-		}
-        double mse = get_min_mean_squared_error();
-        if (mse < _min_mean_squared_error) {
-            qDebug() << "At " << iteration << " iteration MSE: " << mse << " was achieved\n";
+        _training_algorithm -> Train(data, target);
+        double mse = get_mean_squared_error();
+        if (mse < _min_mean_squared_error)
+            qDebug() << "На итерации " << iteration << "достигнуто значение " << mse;
             success = false;
-		}
         ResetMSE();
 	}
     return success;
@@ -158,7 +155,6 @@ bool NeuralNetwork::Train(QVector<QVector<double> > &data, QVector<QVector<int> 
 QVector<int> NeuralNetwork::NetResponse(QVector<double> &data) {
     QVector<int> response;
     if (data.size() != _inputs) {
-        qDebug() << "Input data dimensions are wrong, expected: " << _inputs << " elements\n";
         return response;
     } else {
         for (int i = 0; i < GetInputLayer().size(); i++) {
@@ -173,7 +169,7 @@ QVector<int> NeuralNetwork::NetResponse(QVector<double> &data) {
             _bias_layer[layers] -> Fire();
 		}
 
-        qDebug() << "Net response is: { ";
+        qDebug() << "Ответ сети: ";
         for (int outputs = 0; outputs < _outputs; outputs++) {
             double result = GetOutputLayer().at(outputs) -> Fire();
             qDebug() << "res: " << result << endl;

@@ -1,10 +1,10 @@
 #ifndef TRAINALGORITHM_H_
 #define TRAINALGORITHM_H_
 
+#include <QMessageBox>
+
 #include <QVector>
 #include <QDebug>
-#include <stdio.h>
-#include <stdlib.h>
 #include <time.h>
 #include "neuralnetwork.h"
 

@@ -32,7 +32,9 @@ Backpropagation::~Backpropagation() {
 
 double Hebb::Train(const QVector<double> &data, const QVector<int> &target) {
     if (data.size() != _neural_network -> get_inputs() || target.size() != _neural_network -> get_outputs()) {
-        qDebug() << "Input data dimensions are wrong, expected: " << _neural_network -> get_inputs() << " elements\n";
+        QMessageBox::critical(0,
+                              QString("Ошибка при обучении сети"),
+                              QString("Входные данные не соответствуют входу сети"));
         return false;
     } else {
         for (int index = 0; index < _neural_network -> get_inputs(); index++) {
@@ -45,7 +47,7 @@ double Hebb::Train(const QVector<double> &data, const QVector<int> &target) {
             for (int index = 0; index < _neural_network -> GetLayer(layers).size(); index++) {
                 _neural_network -> GetLayer(layers).at(index) -> Fire();
 			}
-            _neural_network->GetBiasLayer().at(layers)->Fire();
+            _neural_network -> GetBiasLayer().at(layers)->Fire();
 		}
 
         //output target vector
