@@ -4,7 +4,7 @@
 #include <QDialog>
 #include <QPushButton>
 
-#include "neuralnetwork.h"
+#include "networkfunction.h"
 
 namespace Ui {
 class NeuronNetworkSettingsDialog;

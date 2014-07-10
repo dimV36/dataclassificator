@@ -12,7 +12,7 @@ TARGET = NeuronNetwork
 TEMPLATE = app
 
 #QGVCore library
-LIBS += -L$$OUT_PWD/../lib -lQGVCore
+LIBS += -L$$OUT_PWD/../lib -lQGVCore -lNeuralNetwork
 INCLUDEPATH += $$PWD/../include
 DEPENDPATH += $$PWD/../include
 
@@ -21,31 +21,22 @@ SOURCES += main.cpp\
     graphicsview.cpp \
     neuronnetworksettingsdialog.cpp \
     tablecolumnchooser.cpp \
-    networkfunction.cpp \
-    neurallink.cpp \
-    neuralnetwork.cpp \
-    neuron.cpp \
-    neuronfactory.cpp \
-    trainalgorithm.cpp \
     neuralsample.cpp \
-    node.cpp
+    node.cpp \
+    classificatordialog.cpp
 
 HEADERS  += mainwindow.h \
     graphicsview.h \
     neuronnetworksettingsdialog.h \
     tablecolumnchooser.h \
-    networkfunction.h \
-    neurallink.h \
-    neuralnetwork.h \
-    neuron.h \
-    neuronfactory.h \
-    trainalgorithm.h \
     neuralsample.h \
-    node.h
+    node.h \
+    classificatordialog.h
 
 FORMS    += mainwindow.ui \
     neuronnetworksettingsdialog.ui \
-    tablecolumnchooser.ui
+    tablecolumnchooser.ui \
+    classificatordialog.ui
 
 RESOURCES += \
     res/res.qrc

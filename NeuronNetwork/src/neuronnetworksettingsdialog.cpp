@@ -1,6 +1,7 @@
 #include "neuronnetworksettingsdialog.h"
 #include "ui_neuronnetworksettingsdialog.h"
 
+
 NeuronNetworkSettingsDialog::NeuronNetworkSettingsDialog(QWidget *parent) :
     QDialog(parent),
     _ui(new Ui::NeuronNetworkSettingsDialog) {

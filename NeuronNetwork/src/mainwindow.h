@@ -32,14 +32,13 @@ private:
     void CreateTeachSample(QString file_name);
     void CreateNetwork();
     void ShakeExamples();
-    QVector<Node *> GetLayout(int index) const;
-    void AddEdges(Node *node, int layout);
+    QVector<Node *> GetNodeLayer(int index) const;
 
     QVector<int> ConvertClassToVector(int class_number);
     void UpdateLinksOnGraph();
 
 signals:
-    void SignalNetworkSettingsChanged();
+    void SignalWeightsWereChanged();
 
 private slots:
     void SlotDrawGraph();
@@ -48,6 +47,7 @@ private slots:
     void on__action_teach_triggered();
     void on__action_classificate_triggered();
     void on__action_network_settings_triggered();
+    void on__action_stop_training_triggered();
 
 private:
     Ui::MainWindow *_ui;
@@ -59,17 +59,18 @@ private:
     QVector<Node*> _output_layer;
 
     /* Параметры сети, которые пользователь вводит */
-    int _inputs;                   // Количество входов
-    int _outputs;                  // Количество выходов
-    int _hidden_layer_size;        // Количество слоёв
-    int _neurons_in_hidden_layer;  // Количество нейронов в слое
-    ActivationFunction _function;  // Значение активационной функции в слоях
+    int _inputs;                                // Количество входов
+    int _outputs;                               // Количество выходов
+    int _hidden_layer_size;                     // Количество слоёв
+    int _neurons_in_hidden_layer;               // Количество нейронов в слое
+    ActivationFunction _function;               // Значение активационной функции в слоях
 
-    QList<int> _choosen_column;    // Список со значениями выбранных столбцов
-
+    QList<int> _choosen_column;                 // Список со значениями выбранных столбцов
     NeuralSample _teach_sample;                 // Выборка обучающих примеров
     NeuralNetwork *_network;                    // Нейронная сеть
     QMap<QString, int> _class_map;              // Карта соответствия имени номеру класса
+
+    bool _stop_teaching;                        // Остановить обучение сети
 };
 
 #endif // MAINWINDOW_H

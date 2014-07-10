@@ -45,6 +45,7 @@ void Node::set_scene(QGVScene *scene) {
 
 void Node::AddEdge(Node *node, const QString label) {
     QGVEdge *edge = _scene -> addEdge(_node, node -> get_node(), label);
+    edge -> setAttribute("fontsize", "60");
     _edges.push_back(edge);
 }
 

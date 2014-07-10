@@ -14,14 +14,15 @@ MainWindow::MainWindow(QWidget *parent) :
     _ui -> setupUi(this);
 
     /* Перерисовка графа по измению параметров сети */
-    connect(this, SIGNAL(SignalNetworkSettingsChanged()), this, SLOT(SlotDrawGraph()));
+    connect(this, SIGNAL(SignalWeightsWereChanged()), this, SLOT(SlotDrawGraph()));
 
-    /* Создание сцены, на которой отрисовывается визуализация сети */
+    /* Создание сцены, на которой отрисовывается сеть */
     _scene = new QGVScene(QString());
     _ui -> _view -> setScene(_scene);
 
     _inputs = _outputs = _hidden_layer_size = _neurons_in_hidden_layer = 1;
     _function = LinearFunction;
+    _stop_teaching = false;
 }
 
 /**
@@ -67,9 +68,9 @@ void MainWindow::CreateTeachSample(QString file_name) {
     TableColumnChooser chooser;
     chooser.set_headers(headers);
     chooser.set_input(_inputs);
-    if (chooser.exec() == QDialog::Accepted) {
+    if (chooser.exec() == QDialog::Accepted)
         choosen_data = chooser.get_headers();   // Если пользователь нажал ОК, то получаем выбранные столбцы
-    } else
+    else
         return;
     /*Ищем индексы выбранных данных в списке заголовков*/
     for (int i = 0; i < choosen_data.size(); i++)
@@ -112,28 +113,15 @@ void MainWindow::ShakeExamples() {
 
 /**
  * Функция возвращает слой узлов (нейронов), используется при построении связей между нейронами
- * @brief MainWindow::GetLayout
+ * @brief MainWindow::GetNodeLayer
  * @param index - номер слоя
  * @return
  */
-QVector<Node*> MainWindow::GetLayout(int index) const {
+QVector<Node*> MainWindow::GetNodeLayer(int index) const {
     QVector<Node*> result;
     for (int i = 0; i < _neurons_in_hidden_layer; i++)
         result.push_back(_hidden_layer[index][i]);
     return result;
-}
-
-
-/**
- * Функция строит рёбра между переданным и скрытыми нейронами
- * @brief MainWindow::AddEdges
- * @param node - нейрон
- * @param layout - слой
- */
-void MainWindow::AddEdges(Node *node, int layout) {
-    QVector<Node*> next_layout = GetLayout(layout + 1);
-    for (int i = 0; i < next_layout.size(); i++)
-        node -> AddEdge(next_layout[i], "0");
 }
 
 
@@ -162,7 +150,7 @@ void MainWindow::UpdateLinksOnGraph() {
     for (int i = 0; i < input_layer.size(); i++) {
         Neuron *neuron = input_layer[i];
         Node *node = _input_layer[i];
-        QVector<Node*> hidden = GetLayout(0);
+        QVector<Node*> hidden = GetNodeLayer(0);
         QVector<NeuralLink*> links = neuron -> get_links_to_neurons();
         for (int j = 0; j < links.size(); j++) {
             QString weight = QString::number(links[j] -> get_weight());
@@ -187,7 +175,9 @@ void MainWindow::SlotDrawGraph() {
     /* Установка основных параметров всей сети */
     _scene -> setGraphAttribute("splines", "spline");
     _scene -> setGraphAttribute("rankdir", "LR");
-    _scene -> setGraphAttribute("nodesep", "1.0");
+    _scene -> setGraphAttribute("nodesep", "2.0");
+    _scene -> setGraphAttribute("ranksep", "3");
+
     /* Установка основных параметров узла */
     _scene -> setNodeAttribute("shape", "circle");
     _scene -> setNodeAttribute("style", "filled");
@@ -226,10 +216,13 @@ void MainWindow::SlotDrawGraph() {
 
     /* Создаются связи между входным слоем и скрытым */
     for (int i = 0; i < _inputs; i++) {
-        QVector<Node *> hidden_layer = GetLayout(0);
+        QVector<Node *> hidden_layer = GetNodeLayer(0);
         Node *input = _input_layer[i];
         for (int j = 0; j < hidden_layer.size(); j++) {
-            input -> AddEdge(hidden_layer[j], "0");
+            QString weight = QString::number(_network -> GetInputLayer()[i] -> get_links_to_neurons()[j] -> get_weight());
+            while (weight.size() > 7)
+                weight.chop(1);
+            input -> AddEdge(hidden_layer[j], weight);
         }
     }
 
@@ -237,16 +230,27 @@ void MainWindow::SlotDrawGraph() {
     for (int i = 0; i < _hidden_layer_size; i++)
         for (int j = 0; j < _neurons_in_hidden_layer; j++) {
         Node *node = _hidden_layer[i][j];
-        if (i + 1 != _hidden_layer_size)
-            AddEdges(node, i);
+        if (i + 1 != _hidden_layer_size) {
+            QVector<Node*> next_layout = GetNodeLayer(i + 1);
+            for (int j = 0; j < next_layout.size(); j++) {
+                QString weight = QString::number(_network -> GetLayer(i)[i] -> get_links_to_neurons()[j] -> get_weight());
+                while (weight.size() > 7)
+                    weight.chop(1);
+                node -> AddEdge(next_layout[j], weight);
+            }
+        }
     }
 
     /* Создаются связи между скрытым слоем и выходящим */
-    for (int i = 0; i < _outputs; i++) {
-        QVector<Node*> hidden_layer = GetLayout(_hidden_layer_size - 1);
-        Node *output = _output_layer[i];
-        for (int j = 0; j < hidden_layer.size(); j++)
-            hidden_layer[j] -> AddEdge(output, "0");
+    for (int i = 0; i < _neurons_in_hidden_layer; i++) {
+        QVector<Node*> hidden_layer = GetNodeLayer(_hidden_layer_size - 1);
+        QVector<Neuron*> hidden = _network -> GetLayer(_hidden_layer_size);
+        for (int j = 0; j < _outputs; j++) {
+            QString weigth = QString::number(hidden[i] -> get_links_to_neurons()[j] -> get_weight());
+            while (weigth.size() > 7)
+                weigth.chop(1);
+            hidden_layer[i] -> AddEdge(_output_layer[j], weigth);
+        }
     }
 
     _scene -> applyLayout();
@@ -276,12 +280,24 @@ void MainWindow::on__action_open_sample_triggered() {
  * @brief MainWindow::on__action_teach_triggered
  */
 void MainWindow::on__action_teach_triggered() {
-    for (int i = 0; i < _teach_sample.GetSampleSize(); i++) {
-        NeuralNetworkExample example = _teach_sample[i];
+    _ui -> _action_stop_training -> setEnabled(true);
+    int index = 0;
+    while ((false == _stop_teaching) && (index < _teach_sample.GetSampleSize())) {
+        NeuralNetworkExample example = _teach_sample[index];
         _network -> Train(example.first, example.second);
-        _ui -> _status_bar -> showMessage(tr("Обучение примеру %1").arg(i + 1), 100);
-        UpdateLinksOnGraph();
+        _ui -> _status_bar -> showMessage(tr("Обучение примеру %1").arg(index + 1));
+        emit SignalWeightsWereChanged();
+        index++;
     }
+    if (true == _stop_teaching) {
+        _ui -> _status_bar -> showMessage(tr("Обучение отменено пользователем"), 100);
+        _stop_teaching = false;
+        _ui -> _action_stop_training -> setEnabled(false);
+        return;
+    } else {
+        _ui -> _status_bar -> showMessage(tr("Обучение завершено"), 100);
+    }
+    _ui -> _action_stop_training -> setEnabled(false);
 }
 
 
@@ -290,7 +306,30 @@ void MainWindow::on__action_teach_triggered() {
  * @brief MainWindow::on__action_classificate_triggered
  */
 void MainWindow::on__action_classificate_triggered() {
-    _input_layer[0] -> get_node() -> setLabel("2");
+    QString file_name = QFileDialog::getOpenFileName(this,
+                                                     tr("Выбрать файл с тестовой выборкой"),
+                                                     QDir::currentPath(),
+                                                     tr("Файлы выборки (*txt)"));
+    if (true == file_name.isEmpty())
+        return;
+
+    QFile file(file_name);
+    if (false == file.open(QIODevice::ReadOnly)) {
+        QMessageBox::critical(this,
+                              tr("Ошибка при открытии файла выборки"),
+                              tr("Невозможно открыть файл %1").arg(file_name));
+        return;
+    }
+
+    while(false == file.atEnd()) {
+        QStringList row_list = QString(file.readLine()).split('\t');
+        QString class_name = row_list.at(0);
+        QVector<double> data;
+        for (int i = 0; i < _choosen_column.size(); i++)
+            data.push_back(row_list.at(i).toDouble());
+        qDebug() << _network -> NetResponse(data);
+    }
+    file.close();
 }
 
 
@@ -311,9 +350,17 @@ void MainWindow::on__action_network_settings_triggered() {
         _hidden_layer_size = dialog.get_hidden_layer_size();
         _neurons_in_hidden_layer = dialog.get_neurons_in_hidden_layer();
         _function = dialog.get_activation_function();
-        emit SignalNetworkSettingsChanged();
+        CreateNetwork();
+        emit SignalWeightsWereChanged();
         _ui -> _action_open_sample -> setEnabled(true);
     }
-    CreateNetwork();
 }
 
+
+/**
+ * Слот, останавливающий обучение сети
+ * @brief MainWindow::on__action_stop_training_triggered
+ */
+void MainWindow::on__action_stop_training_triggered() {
+    _stop_teaching = true;
+}
