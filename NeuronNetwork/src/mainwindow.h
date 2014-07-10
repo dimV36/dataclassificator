@@ -15,6 +15,7 @@
 #include "tablecolumnchooser.h"
 #include "neuralnetwork.h"
 #include "node.h"
+#include "classificatordialog.h"
 
 namespace Ui {
 class MainWindow;
@@ -34,8 +35,8 @@ private:
     void ShakeExamples();
     QVector<Node *> GetNodeLayer(int index) const;
 
-    QVector<int> ConvertClassToVector(int class_number);
-    void UpdateLinksOnGraph();
+    QVector<int> ConvertClassToVector(int class_number) const;
+    QString ConvertVectorToClass(QVector<int> output) const;
 
 signals:
     void SignalWeightsWereChanged();
@@ -47,7 +48,6 @@ private slots:
     void on__action_teach_triggered();
     void on__action_classificate_triggered();
     void on__action_network_settings_triggered();
-    void on__action_stop_training_triggered();
 
 private:
     Ui::MainWindow *_ui;
@@ -70,7 +70,6 @@ private:
     NeuralNetwork *_network;                    // Нейронная сеть
     QMap<QString, int> _class_map;              // Карта соответствия имени номеру класса
 
-    bool _stop_teaching;                        // Остановить обучение сети
 };
 
 #endif // MAINWINDOW_H

@@ -44,7 +44,6 @@
     <addaction name="_action_network_settings"/>
     <addaction name="separator"/>
     <addaction name="_action_teach"/>
-    <addaction name="_action_stop_training"/>
     <addaction name="_action_classificate"/>
    </widget>
    <addaction name="_menu_file"/>
@@ -62,7 +61,6 @@
    </attribute>
    <addaction name="_action_open_sample"/>
    <addaction name="_action_teach"/>
-   <addaction name="_action_stop_training"/>
    <addaction name="_action_classificate"/>
    <addaction name="_action_network_settings"/>
   </widget>
@@ -119,18 +117,6 @@
    </property>
    <property name="text">
     <string>Конфигурация сети</string>
-   </property>
-  </action>
-  <action name="_action_stop_training">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
-   <property name="icon">
-    <iconset resource="res/res.qrc">
-     <normaloff>:/button_cancel.png</normaloff>:/button_cancel.png</iconset>
-   </property>
-   <property name="text">
-    <string>Остановить обучение</string>
    </property>
   </action>
  </widget>

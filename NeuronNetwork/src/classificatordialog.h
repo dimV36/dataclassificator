@@ -3,6 +3,10 @@
 
 #include <QDialog>
 
+#define CLASS_SECTION 0
+#define NETWORK_RESPONSE_SECTION 1
+#define STATUS_SECTION 2
+
 namespace Ui {
 class ClassificatorDialog;
 }
@@ -17,6 +21,7 @@ public:
     explicit ClassificatorDialog(QWidget *parent = 0);
     ~ClassificatorDialog();
 
+    void set_data(QList<QPair<QString, QString> > data);
 };
 
 #endif // CLASSIFICATORDIALOG_H

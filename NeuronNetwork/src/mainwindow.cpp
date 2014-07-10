@@ -1,7 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-#include <QDebug>
 
 /**
  * Конструктор класса
@@ -22,7 +21,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
     _inputs = _outputs = _hidden_layer_size = _neurons_in_hidden_layer = 1;
     _function = LinearFunction;
-    _stop_teaching = false;
 }
 
 /**
@@ -131,7 +129,7 @@ QVector<Node*> MainWindow::GetNodeLayer(int index) const {
  * @param class_number - номер класса
  * @return преобразованный вектор
  */
-QVector<int> MainWindow::ConvertClassToVector(int class_number) {
+QVector<int> MainWindow::ConvertClassToVector(int class_number) const {
     QVector<int> result = QVector<int>(_outputs);
     for (int i = 0; i < result.size(); i++) {
         if (i == class_number - 1)
@@ -141,24 +139,12 @@ QVector<int> MainWindow::ConvertClassToVector(int class_number) {
 }
 
 
-/**
- * Метод обновляет связи между нейронами на графике
- * @brief MainWindow::UpdateLinksOnGraph
- */
-void MainWindow::UpdateLinksOnGraph() {
-    QVector<Neuron*> input_layer = _network -> GetInputLayer();
-    for (int i = 0; i < input_layer.size(); i++) {
-        Neuron *neuron = input_layer[i];
-        Node *node = _input_layer[i];
-        QVector<Node*> hidden = GetNodeLayer(0);
-        QVector<NeuralLink*> links = neuron -> get_links_to_neurons();
-        for (int j = 0; j < links.size(); j++) {
-            QString weight = QString::number(links[j] -> get_weight());
-            node -> get_edges()[j] -> setLabel(weight);
-            _scene -> applyLayout();
-            _ui -> _view -> fitInView(_scene -> sceneRect(), Qt::KeepAspectRatio);
-        }
+QString MainWindow::ConvertVectorToClass(QVector<int> output) const {
+    for (int i = 0; i < output.size(); i++) {
+        if (output[i] == 1)
+            return _class_map.key(output[i]);
     }
+    return tr("Класс не определён сетью");
 }
 
 
@@ -280,25 +266,19 @@ void MainWindow::on__action_open_sample_triggered() {
  * @brief MainWindow::on__action_teach_triggered
  */
 void MainWindow::on__action_teach_triggered() {
-    _ui -> _action_stop_training -> setEnabled(true);
     int index = 0;
-    while ((false == _stop_teaching) && (index < _teach_sample.GetSampleSize())) {
+    while (index < _teach_sample.GetSampleSize()) {
         NeuralNetworkExample example = _teach_sample[index];
         _network -> Train(example.first, example.second);
-        _ui -> _status_bar -> showMessage(tr("Обучение примеру %1").arg(index + 1));
-        emit SignalWeightsWereChanged();
+        _ui -> _status_bar -> showMessage(tr("Обучение примеру %1 из %2").arg(index + 1).arg(_teach_sample.GetSampleSize()));
+        if ((index % 10 == 0) || (index == _teach_sample.GetSampleSize()))
+            emit SignalWeightsWereChanged();
         index++;
     }
-    if (true == _stop_teaching) {
-        _ui -> _status_bar -> showMessage(tr("Обучение отменено пользователем"), 100);
-        _stop_teaching = false;
-        _ui -> _action_stop_training -> setEnabled(false);
-        return;
-    } else {
-        _ui -> _status_bar -> showMessage(tr("Обучение завершено"), 100);
-    }
-    _ui -> _action_stop_training -> setEnabled(false);
+    _ui -> _status_bar -> showMessage(tr("Обучение завершено"), 10000);
+    _ui -> _action_classificate -> setEnabled(true);
 }
+
 
 
 /**
@@ -320,16 +300,21 @@ void MainWindow::on__action_classificate_triggered() {
                               tr("Невозможно открыть файл %1").arg(file_name));
         return;
     }
-
-    while(false == file.atEnd()) {
+    QList<QPair<QString, QString> > results;
+    file.readLine();
+    while (false == file.atEnd()) {
         QStringList row_list = QString(file.readLine()).split('\t');
         QString class_name = row_list.at(0);
         QVector<double> data;
         for (int i = 0; i < _choosen_column.size(); i++)
             data.push_back(row_list.at(i).toDouble());
-        qDebug() << _network -> NetResponse(data);
+        QString class_of_example = ConvertVectorToClass(_network -> NetResponse(data));
+        results.push_back(QPair<QString, QString>(class_name, class_of_example));
     }
     file.close();
+    ClassificatorDialog dialog;
+    dialog.set_data(results);
+    dialog.exec();
 }
 
 
@@ -353,14 +338,7 @@ void MainWindow::on__action_network_settings_triggered() {
         CreateNetwork();
         emit SignalWeightsWereChanged();
         _ui -> _action_open_sample -> setEnabled(true);
+        _ui -> _action_teach -> setEnabled(false);
+        _ui -> _action_classificate -> setEnabled(false);
     }
-}
-
-
-/**
- * Слот, останавливающий обучение сети
- * @brief MainWindow::on__action_stop_training_triggered
- */
-void MainWindow::on__action_stop_training_triggered() {
-    _stop_teaching = true;
 }
