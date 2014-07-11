@@ -5,6 +5,7 @@
 #include <QVector>
 #include <QMessageBox>
 #include <QFileDialog>
+#include <QTime>
 
 #include <QGVScene.h>
 #include <QGVNode.h>
@@ -36,7 +37,7 @@ private:
     QVector<Node *> GetNodeLayer(int index) const;
 
     QVector<int> ConvertClassToVector(int class_number) const;
-    QString ConvertVectorToClass(QVector<int> output) const;
+    QString ConvertVectorToClass(QVector<int> output);
 
 signals:
     void SignalWeightsWereChanged();

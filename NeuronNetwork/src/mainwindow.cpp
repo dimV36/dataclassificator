@@ -21,6 +21,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     _inputs = _outputs = _hidden_layer_size = _neurons_in_hidden_layer = 1;
     _function = LinearFunction;
+
+    qsrand(QTime().secsTo(QTime().currentTime()));
 }
 
 /**
@@ -139,10 +141,18 @@ QVector<int> MainWindow::ConvertClassToVector(int class_number) const {
 }
 
 
-QString MainWindow::ConvertVectorToClass(QVector<int> output) const {
+/**
+ * Функция преобразовывает вектор вывода сети в имя класса
+ * @brief MainWindow::ConvertVectorToClass
+ * @param output
+ * @return
+ */
+QString MainWindow::ConvertVectorToClass(QVector<int> output)  {
+    int coordinate = qrand() % output.size();
+    output[coordinate] = 1;
     for (int i = 0; i < output.size(); i++) {
         if (output[i] == 1)
-            return _class_map.key(output[i]);
+            return _class_map.key(i + 1);
     }
     return tr("Класс не определён сетью");
 }
