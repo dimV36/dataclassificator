@@ -39,6 +39,7 @@ public:
     bool Train(QVector<double> &data, QVector<int> &target);
     QVector<int> NetResponse(QVector<double> &data);
     void ShowNetworkState();
+    QString GetInformationAboutNetwork() const;
 
     QVector<Neuron *> GetLayer(int index) const;
     int size() const;

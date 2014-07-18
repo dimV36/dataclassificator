@@ -13,7 +13,7 @@
   <property name="windowTitle">
    <string>Классификация данных</string>
   </property>
-  <layout class="QGridLayout" name="_grid_layout">
+  <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="0">
     <widget class="QTableWidget" name="_table">
      <property name="editTriggers">
@@ -55,6 +55,63 @@
     </widget>
    </item>
    <item row="1" column="0">
+    <widget class="QCheckBox" name="_button_statistic">
+     <property name="text">
+      <string>Показать статистику</string>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="0">
+    <widget class="QTableWidget" name="_table_statistic">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="editTriggers">
+      <set>QAbstractItemView::NoEditTriggers</set>
+     </property>
+     <attribute name="horizontalHeaderDefaultSectionSize">
+      <number>150</number>
+     </attribute>
+     <attribute name="horizontalHeaderStretchLastSection">
+      <bool>true</bool>
+     </attribute>
+     <attribute name="verticalHeaderStretchLastSection">
+      <bool>false</bool>
+     </attribute>
+     <column>
+      <property name="text">
+       <string>Класс</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>% распознанных примеров</string>
+      </property>
+     </column>
+    </widget>
+   </item>
+   <item row="3" column="0">
+    <layout class="QHBoxLayout" name="_layout_file_name">
+     <item>
+      <widget class="QLabel" name="_label_results">
+       <property name="text">
+        <string>Путь для сохранения результатов:</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="_edit_file_name"/>
+     </item>
+     <item>
+      <widget class="QPushButton" name="_button_change_file_name">
+       <property name="text">
+        <string>Изменить...</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item row="4" column="0">
     <widget class="QDialogButtonBox" name="_button_box">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>

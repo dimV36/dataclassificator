@@ -187,6 +187,11 @@ void NeuralNetwork::ShowNetworkState() {
 }
 
 
+QString NeuralNetwork::GetInformationAboutNetwork() const {
+    return QString("Многослойная нейронная сеть входов: %1, выходов: %2, скрытых слоёв: %3, нейронов в скрытом слое: %4.\n").arg(_inputs).arg(_outputs).arg(size()).arg(_hidden);
+}
+
+
 QVector<Neuron*> NeuralNetwork::GetLayer(int index) const {
     return _layers[index];
 }

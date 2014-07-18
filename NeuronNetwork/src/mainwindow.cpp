@@ -324,7 +324,23 @@ void MainWindow::on__action_classificate_triggered() {
     file.close();
     ClassificatorDialog dialog;
     dialog.set_data(results);
-    dialog.exec();
+    if (dialog.exec() == QDialog::Accepted) {
+        QStringList results = dialog.get_statistic();
+        QString file_name = dialog.get_file_name();
+
+        QFile file(file_name);
+        if (false == file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+            QMessageBox::critical(this,
+                                  tr("Ошибка при открытии файла"),
+                                  tr("Невозможно открыть файл %1 для записи.").arg(file_name));
+            return;
+        }
+        QTextStream out(&file);
+        out << _network -> GetInformationAboutNetwork();
+        for (int i = 0; i < results.size(); i++)
+            out << results[i];
+        file.close();
+    }
 }
 
 
