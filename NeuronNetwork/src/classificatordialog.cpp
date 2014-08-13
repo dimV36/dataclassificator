@@ -58,18 +58,22 @@ void ClassificatorDialog::UpdateMapStatistic(QString class_name, QString status)
 void ClassificatorDialog::SetStatistic() {
     QStringList keys = _class_counts.keys();
     _ui -> _table_statistic -> setRowCount(keys.size());
-    for (int i = 0; i < keys.size(); i++) {
-        _ui -> _table_statistic -> setItem(i, CLASS_SECTION, new QTableWidgetItem(keys[i]));
-        _ui -> _table_statistic -> setItem(i, PERCENT_SECTION, new QTableWidgetItem(QString::number(( (double) _statistic_map[keys[i]] / (double) _class_counts[keys[i]]) * 100, 'g', 3)));
-    }
+    _ui -> _table_statistic -> setColumnCount(keys.size());
+    _ui -> _table_statistic -> setVerticalHeaderLabels(keys);
+    _ui -> _table_statistic -> setHorizontalHeaderLabels(keys);
+    _ui -> _table_statistic -> verticalHeader() -> setVisible(true);
+    _ui -> _table_statistic -> horizontalHeader() -> setVisible(true);
+    for (int i = 0; i < keys.size(); i++)
+        _ui -> _table_statistic -> setItem(i, i, new QTableWidgetItem(QString::number(( (double) _statistic_map[keys[i]] / (double) _class_counts[keys[i]]) * 100, 'g', 3)));
 }
 
 
 QStringList ClassificatorDialog::get_statistic() const {
     QStringList result;
+    QStringList keys = _class_counts.keys();
     int rows = _ui -> _table_statistic -> rowCount();
     for (int i = 0; i < rows; i++) {
-        QString row = _ui -> _table_statistic -> item(i, CLASS_SECTION) -> text() + "\t" + _ui -> _table_statistic -> item(i, PERCENT_SECTION) -> text() + "\n";
+        QString row = keys[i] + "\t" + _ui -> _table_statistic -> item(i, i) -> text() + "\n";
         result.push_back(row);
     }
     return result;
